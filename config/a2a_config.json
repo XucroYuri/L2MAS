@@ -16,52 +16,52 @@
   "agents": [
     {
       "id": "director@studio.example.com",
-      "name": "总导演Agent",
-      "description": "全局任务编排，将剧本分解为分镜，协调所有Agent工作",
+      "name": "Director Agent",
+      "description": "Plans storyboards and orchestrates the animation workflow",
       "endpoint": "http://director-agent:8000",
-      "capabilities": ["orchestration", "storyboarding", "task_scheduling"]
+      "capabilities": ["script.plan", "quality.review"]
     },
     {
       "id": "writer@studio.example.com",
-      "name": "编剧Agent",
-      "description": "剧本创作、情绪分析、台词生成",
+      "name": "Writer Agent",
+      "description": "Expands scripts, dialogue, and emotion tags",
       "endpoint": "http://writer-agent:8000",
-      "capabilities": ["script_writing", "emotion_analysis", "dialogue_generation"]
+      "capabilities": ["script.plan"]
     },
     {
       "id": "modeling@tools.example.com",
-      "name": "Live2D建模专家",
-      "description": "从文本或图片自动生成高质量Live2D模型，使用Textoon技术",
+      "name": "Live2D Modeling Agent",
+      "description": "Generates or selects Live2D model artifacts from text or image input",
       "endpoint": "http://modeling-agent:8000",
-      "capabilities": ["live2d_modeling", "textoon", "auto_rigging"]
+      "capabilities": ["model.live2d.generate"]
     },
     {
       "id": "animator@tools.example.com",
-      "name": "动画导演Agent",
-      "description": "根据分镜生成动画片段，自动生成动作序列和表情变化",
+      "name": "Animation Agent",
+      "description": "Generates shot motion, expression parameters, and animation artifacts",
       "endpoint": "http://animation-agent:8000",
-      "capabilities": ["animation", "motion_generation", "emotion_animation"]
+      "capabilities": ["motion.generate"]
     },
     {
       "id": "voice@tools.example.com",
-      "name": "配音Agent",
-      "description": "生成情感配音，支持多模态TTS和RVC克隆",
+      "name": "Voice Agent",
+      "description": "Generates dialogue audio and speech timing artifacts",
       "endpoint": "http://voice-agent:8000",
-      "capabilities": ["tts", "voice_generation", "emotion_tts"]
+      "capabilities": ["voice.generate", "voice.convert"]
     },
     {
       "id": "lip_sync@tools.example.com",
-      "name": "口型同步Agent",
-      "description": "音素对齐，实时嘴型同步，平滑插值",
+      "name": "LipSync Agent",
+      "description": "Aligns speech, phonemes, visemes, and mouth-shape timing",
       "endpoint": "http://lip-sync-agent:8000",
-      "capabilities": ["lip_sync", "phoneme_alignment", "viseme_generation"]
+      "capabilities": ["speech.transcribe", "lip_sync.align"]
     },
     {
       "id": "renderer@tools.example.com",
-      "name": "渲染合成Agent",
-      "description": "将所有动画片段合成最终视频，添加转场和特效",
+      "name": "Renderer Agent",
+      "description": "Composes shot artifacts into the final video output",
       "endpoint": "http://renderer-agent:8000",
-      "capabilities": ["video_composition", "rendering", "post_processing"]
+      "capabilities": ["video.compose", "video.edit"]
     }
   ],
   "task_routing": {

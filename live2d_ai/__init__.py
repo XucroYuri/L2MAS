@@ -1,5 +1,7 @@
 """Public MVP API for L2MAS local smoke runs."""
 
+__version__ = "0.1.0"
+
 from .pipeline import (
     AnimationGenerator,
     AnimationResult,
@@ -20,4 +22,5 @@ __all__ = [
     "ProviderRegistry",
     "ProviderRouter",
     "ShotArtifact",
+    "__version__",
 ]

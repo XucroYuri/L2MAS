@@ -6,6 +6,8 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-05-30
+
 ### Added
 
 - Deterministic local mock MVP pipeline for provider routing and smoke tests.

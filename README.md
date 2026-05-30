@@ -5,6 +5,7 @@
 [![A2A](https://img.shields.io/badge/A2A-1.0-purple.svg)](https://a2a-protocol.org)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://docker.com)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-informational.svg)](docs/releases/v0.1.0.md)
 
 Protocol-first Live2D multi-agent animation prototype for the 2026 agent ecosystem.
 
@@ -190,6 +191,7 @@ The MVP path must remain runnable with mock or local providers when cloud API ke
 | [config/provider_registry.example.json](config/provider_registry.example.json) | provider registry reference example |
 | [docs/i18n/README.md](docs/i18n/README.md) | localization policy |
 | [docs/github/repository-launch-checklist.md](docs/github/repository-launch-checklist.md) | GitHub publishing checklist and metadata |
+| [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md) | v0.1.0 release notes |
 
 ## Open Source
 
