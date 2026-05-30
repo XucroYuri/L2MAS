@@ -40,6 +40,7 @@ class Provider:
     live_test_env: str | None
     auth_env: str | None
     healthcheck: dict[str, str]
+    verification_evidence: str | None
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> "Provider":
@@ -75,6 +76,7 @@ class Provider:
             live_test_env=str(raw["live_test_env"]) if raw.get("live_test_env") else None,
             auth_env=str(raw["auth_env"]) if raw.get("auth_env") else None,
             healthcheck={str(key): str(value) for key, value in healthcheck.items()},
+            verification_evidence=str(raw["verification_evidence"]) if raw.get("verification_evidence") else None,
         )
 
     @property

@@ -63,6 +63,7 @@ class ProviderVerifier:
             "capabilities": list(provider.capabilities),
             "live_test_env": provider.live_test_env,
             "auth_env": provider.auth_env,
+            "verification_evidence": provider.verification_evidence,
         }
 
         if provider.is_mock:

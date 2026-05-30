@@ -341,6 +341,7 @@
       "fallbacks": ["mock-render"],
       "status": "verified",
       "live_test_env": "L2MAS_LIVE_FFMPEG",
+      "verification_evidence": "docs/verification/local-ffmpeg.json",
       "healthcheck": {"type": "binary", "name": "ffmpeg"},
       "privacy_mode": "local-only"
     },

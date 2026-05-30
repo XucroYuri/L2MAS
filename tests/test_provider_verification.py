@@ -62,6 +62,7 @@ class ProviderVerificationTest(unittest.IsolatedAsyncioTestCase):
                     status="verified",
                     live_test_env="L2MAS_LIVE_TOOL",
                     healthcheck={"type": "binary", "name": "python3"},
+                    verification_evidence="docs/verification/local-tool.json",
                 )
             ]
         )
@@ -70,6 +71,7 @@ class ProviderVerificationTest(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(report["providers"][0]["probe_result"], "passed")
         self.assertEqual(report["providers"][0]["configured_status"], "verified")
+        self.assertEqual(report["providers"][0]["verification_evidence"], "docs/verification/local-tool.json")
 
     async def test_writes_json_report(self):
         registry = ProviderRegistry([provider()])

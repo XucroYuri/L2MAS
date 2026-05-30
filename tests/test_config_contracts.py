@@ -38,6 +38,10 @@ class ConfigContractTest(unittest.TestCase):
             if status == "verified":
                 self.assertIn(f"| `{provider['provider_id']}` |", verification)
                 self.assertIn("| verified |", verification)
+                evidence_path = Path(provider["verification_evidence"])
+                evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+                self.assertEqual(evidence["provider_id"], provider["provider_id"])
+                self.assertEqual(evidence["result"], "passed")
 
     def test_public_docs_do_not_overclaim_unverified_providers(self):
         registry = json.loads(Path("config/provider_registry.example.json").read_text(encoding="utf-8"))

@@ -13,7 +13,7 @@ Status meanings:
 
 | Provider | Status | Capabilities | Validation |
 | --- | --- | --- | --- |
-| `local-ffmpeg` | verified | `video.compose` | Live local MP4 smoke test when FFmpeg is installed. |
+| `local-ffmpeg` | verified | `video.compose` | Live local MP4 smoke test when FFmpeg is installed; see [evidence](verification/local-ffmpeg.json). |
 | `cloud-qwen-agent` | experimental | `script.plan`, `quality.review` | OpenAI-compatible contract path; live test requires `L2MAS_LIVE_QWEN` and `QWEN_API_KEY`. |
 | `local-ollama-agent` | experimental | `script.plan`, `quality.review` | Ollama OpenAI-compatible contract path; live test requires `L2MAS_LIVE_OLLAMA`. |
 | `local-vllm-agent` | experimental | `script.plan`, `quality.review` | OpenAI-compatible contract path; live test requires `L2MAS_LIVE_VLLM`. |

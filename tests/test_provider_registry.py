@@ -37,6 +37,7 @@ class ProviderRegistryTest(unittest.TestCase):
         self.assertEqual(ffmpeg.live_test_env, "L2MAS_LIVE_FFMPEG")
         self.assertIsNone(ffmpeg.auth_env)
         self.assertEqual(ffmpeg.healthcheck["type"], "binary")
+        self.assertEqual(ffmpeg.verification_evidence, "docs/verification/local-ffmpeg.json")
 
         elevenlabs = registry.get("cloud-elevenlabs-voice")
         self.assertEqual(elevenlabs.status, "experimental")
@@ -70,6 +71,7 @@ class ProviderRegistryTest(unittest.TestCase):
         self.assertIsNone(provider.live_test_env)
         self.assertIsNone(provider.auth_env)
         self.assertEqual(provider.healthcheck, {})
+        self.assertIsNone(provider.verification_evidence)
 
     def test_rejects_unknown_provider_status(self):
         payload = {

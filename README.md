@@ -146,8 +146,9 @@ Required fields:
 | `live_test_env` | optional environment variable that enables live provider tests |
 | `auth_env` | optional API key environment variable |
 | `healthcheck` | optional HTTP or binary probe metadata |
+| `verification_evidence` | optional evidence record required when `status` is `verified` |
 
-Provider availability is intentionally conservative. As of the current development state, `local-ffmpeg` is the only live-verified non-mock provider. Other real adapters are contract-tested as `experimental` or held as `template` entries until a live service is validated.
+Provider availability is intentionally conservative. As of the current development state, `local-ffmpeg` is the only live-verified non-mock provider, with evidence recorded in [docs/verification/local-ffmpeg.json](docs/verification/local-ffmpeg.json). Other real adapters are contract-tested as `experimental` or held as `template` entries until a live service is validated.
 
 ## Local Model Support
 

@@ -1,0 +1,29 @@
+{
+  "provider_id": "local-ffmpeg",
+  "status": "verified",
+  "result": "passed",
+  "capabilities": ["video.compose"],
+  "verified_at": "2026-05-30",
+  "environment": {
+    "tool": "ffmpeg",
+    "requirement": "binary available on PATH"
+  },
+  "evidence": [
+    {
+      "command": "python3 -m unittest tests.test_provider_router.ProviderRouterTest.test_invokes_local_ffmpeg_video_compose_provider -v",
+      "result": "passed",
+      "notes": "Creates a real local MP4 container when FFmpeg is installed."
+    },
+    {
+      "command": "python3 -m unittest tests.test_mock_pipeline.MockPipelineTest.test_animation_generator_can_compose_real_local_video -v",
+      "result": "passed",
+      "notes": "Runs the local animation pipeline with use_mock=false and verifies local-ffmpeg video.compose output."
+    },
+    {
+      "command": "python3 examples/probe_providers.py --provider local-ffmpeg --output output/provider-probe-local-ffmpeg.json",
+      "result": "passed",
+      "notes": "Generates a provider probe report that records the binary healthcheck result and this evidence path."
+    }
+  ],
+  "disclosure": "This verifies only local FFmpeg container composition for video.compose. It does not verify Live2D runtime rendering."
+}
