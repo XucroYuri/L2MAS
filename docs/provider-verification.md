@@ -50,3 +50,19 @@ Status meanings:
 ## Disclosure Rule
 
 README, release notes, and GitHub descriptions may say that a provider is verified only when this matrix marks it `verified`. Experimental and template providers must be described as adapter contracts or optional live-test targets, not as production-ready integrations.
+
+## Probe Command
+
+Generate a JSON report without enabling live HTTP probes:
+
+```bash
+python3 examples/probe_providers.py --output output/provider-probe.json
+```
+
+Probe one provider:
+
+```bash
+python3 examples/probe_providers.py --provider mock-voice --output output/provider-probe-mock-voice.json
+```
+
+Live HTTP probes require either `--include-live` or the provider-specific `L2MAS_LIVE_*` environment variable. Do not update a provider to `verified` until the report is reviewed and the validation evidence is added to this document.

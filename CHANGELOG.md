@@ -13,6 +13,7 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 - v0.2.0 provider adapter runtime for OpenAI-compatible, Ollama, ComfyUI, generic REST, ElevenLabs TTS, MCP template, mock, and local FFmpeg paths.
 - Provider status metadata and verification matrix for `verified`, `experimental`, `template`, and `mock` disclosure.
 - Optional live provider tests gated by explicit `L2MAS_LIVE_*` environment variables.
+- Provider verification report CLI for dry-run and optional live provider probes.
 
 ### Changed
 
