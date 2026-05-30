@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 from shutil import which
 
+from live2d_ai import Provider, ProviderRegistry
 from live2d_ai.providers import ProviderRouter
 
 
@@ -39,6 +40,53 @@ class ProviderRouterTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(result.provider_id, "local-ffmpeg")
             self.assertTrue(video_path.exists())
             self.assertGreater(video_path.stat().st_size, 1000)
+
+    async def test_falls_back_to_declared_provider_when_adapter_fails(self):
+        async def failing_transport(request):
+            return {"status_code": 503, "json": {"error": "service unavailable"}}
+
+        primary = Provider.from_dict(
+            {
+                "provider_id": "local-tts",
+                "locality": "local",
+                "protocol": "custom-rest",
+                "capabilities": ["voice.generate"],
+                "endpoint": "http://tts.test",
+                "models": ["local-tts"],
+                "hardware_profile": "test",
+                "priority": 1,
+                "fallbacks": ["mock-voice"],
+                "privacy_mode": "local-only",
+                "status": "template",
+            }
+        )
+        fallback = Provider.from_dict(
+            {
+                "provider_id": "mock-voice",
+                "locality": "local",
+                "protocol": "custom-rest",
+                "capabilities": ["voice.generate"],
+                "endpoint": "mock://voice",
+                "models": ["silent-audio"],
+                "hardware_profile": "none",
+                "priority": 100,
+                "fallbacks": [],
+                "privacy_mode": "local-only",
+                "status": "mock",
+            }
+        )
+        registry = ProviderRegistry([primary, fallback])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            result = await ProviderRouter(
+                registry=registry,
+                output_dir=tmp,
+                http_transport=failing_transport,
+            ).invoke("voice.generate", {"text": "fallback please"})
+
+            self.assertEqual(result.provider_id, "mock-voice")
+            self.assertTrue(Path(result.artifacts["audio_path"]).exists())
+            self.assertIn("local-tts", result.warnings[0])
 
 
 if __name__ == "__main__":

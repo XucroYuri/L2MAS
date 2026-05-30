@@ -142,6 +142,12 @@ Required fields:
 | `priority` | routing priority; lower is preferred |
 | `fallbacks` | ordered fallback provider IDs |
 | `privacy_mode` | `remote`, `local-only`, or `hybrid` |
+| `status` | `verified`, `experimental`, `template`, or `mock` |
+| `live_test_env` | optional environment variable that enables live provider tests |
+| `auth_env` | optional API key environment variable |
+| `healthcheck` | optional HTTP or binary probe metadata |
+
+Provider availability is intentionally conservative. As of the current development state, `local-ffmpeg` is the only live-verified non-mock provider. Other real adapters are contract-tested as `experimental` or held as `template` entries until a live service is validated.
 
 ## Local Model Support
 
@@ -199,10 +205,12 @@ The MVP path must remain runnable with mock or local providers when cloud API ke
 | [deployment_guide.md](deployment_guide.md) | English deployment and evolution guide |
 | [deployment_guide.zh-CN.md](deployment_guide.zh-CN.md) | Simplified Chinese deployment guide |
 | [config/provider_registry.example.json](config/provider_registry.example.json) | provider registry reference example |
+| [docs/provider-verification.md](docs/provider-verification.md) | provider status, live verification, and disclosure policy |
 | [docs/i18n/README.md](docs/i18n/README.md) | localization policy |
 | [docs/github/repository-launch-checklist.md](docs/github/repository-launch-checklist.md) | GitHub publishing checklist and metadata |
 | [docs/github/discovery-profile.md](docs/github/discovery-profile.md) | GitHub discovery profile, topics, labels, and community funnel |
 | [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md) | v0.1.0 release notes |
+| [docs/releases/v0.2.0-draft.md](docs/releases/v0.2.0-draft.md) | v0.2.0 draft notes and verification policy |
 
 ## Open Source
 

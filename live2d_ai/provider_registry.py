@@ -21,6 +21,8 @@ REQUIRED_PROVIDER_FIELDS = {
     "privacy_mode",
 }
 
+PROVIDER_STATUSES = {"verified", "experimental", "template", "mock"}
+
 
 @dataclass(frozen=True)
 class Provider:
@@ -34,12 +36,29 @@ class Provider:
     priority: int
     fallbacks: tuple[str, ...]
     privacy_mode: str
+    status: str
+    live_test_env: str | None
+    auth_env: str | None
+    healthcheck: dict[str, str]
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> "Provider":
         missing = REQUIRED_PROVIDER_FIELDS - set(raw)
         if missing:
             raise ValueError(f"Provider {raw.get('provider_id', '<unknown>')} missing fields: {sorted(missing)}")
+
+        inferred_status = "mock" if cls._looks_like_mock(raw) else "template"
+        status = str(raw.get("status", inferred_status))
+        if status not in PROVIDER_STATUSES:
+            raise ValueError(
+                f"Unsupported provider status for {raw.get('provider_id', '<unknown>')}: {status}"
+            )
+
+        healthcheck = raw.get("healthcheck", {})
+        if healthcheck is None:
+            healthcheck = {}
+        if not isinstance(healthcheck, dict):
+            raise ValueError(f"Provider {raw.get('provider_id', '<unknown>')} healthcheck must be an object")
 
         return cls(
             provider_id=str(raw["provider_id"]),
@@ -52,11 +71,19 @@ class Provider:
             priority=int(raw["priority"]),
             fallbacks=tuple(str(item) for item in raw["fallbacks"]),
             privacy_mode=str(raw["privacy_mode"]),
+            status=status,
+            live_test_env=str(raw["live_test_env"]) if raw.get("live_test_env") else None,
+            auth_env=str(raw["auth_env"]) if raw.get("auth_env") else None,
+            healthcheck={str(key): str(value) for key, value in healthcheck.items()},
         )
 
     @property
     def is_mock(self) -> bool:
-        return self.provider_id.startswith("mock-") or self.endpoint.startswith("mock://")
+        return self.status == "mock" or self.provider_id.startswith("mock-") or self.endpoint.startswith("mock://")
+
+    @staticmethod
+    def _looks_like_mock(raw: dict[str, Any]) -> bool:
+        return str(raw.get("provider_id", "")).startswith("mock-") or str(raw.get("endpoint", "")).startswith("mock://")
 
 
 class ProviderRegistry:

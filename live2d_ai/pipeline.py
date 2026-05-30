@@ -7,10 +7,13 @@ import json
 import time
 from dataclasses import dataclass, asdict
 from pathlib import Path
+from typing import Any, Callable
 from uuid import uuid4
 
 from .provider_registry import ProviderRegistry
 from .providers import ProviderRouter
+
+HttpTransport = Callable[[dict[str, Any]], Any]
 
 
 @dataclass(frozen=True)
@@ -39,6 +42,7 @@ class AnimationResult:
     total_time: float
     shots: list[ShotArtifact]
     provider_trace: dict[str, str]
+    provider_warnings: dict[str, list[str]]
     output_dir: str
 
 
@@ -113,9 +117,11 @@ class AnimationGenerator:
         output_dir: str | Path = "output/mvp",
         privacy_mode: str = "local-only",
         use_mock: bool = True,
+        http_transport: HttpTransport | None = None,
     ):
         self.api_endpoint = api_endpoint
         self.api_key = api_key
+        self.provider_registry_path = provider_registry_path
         self.registry = (
             ProviderRegistry.from_file(provider_registry_path)
             if provider_registry_path
@@ -124,6 +130,7 @@ class AnimationGenerator:
         self.output_dir = Path(output_dir)
         self.privacy_mode = privacy_mode
         self.use_mock = use_mock
+        self.http_transport = http_transport
         self.last_result: AnimationResult | None = None
 
     async def health_check(self) -> dict[str, object]:
@@ -165,6 +172,14 @@ class AnimationGenerator:
             privacy_mode=self.privacy_mode,
             prefer_mock=self.use_mock,
         )
+        provider_warnings: dict[str, list[str]] = {}
+        router = ProviderRouter(
+            registry=self.registry,
+            output_dir=run_dir,
+            privacy_mode=self.privacy_mode,
+            prefer_mock=self.use_mock,
+            http_transport=self.http_transport,
+        )
 
         storyboard = self._storyboard_from_script(script)
         (run_dir / "storyboard.json").write_text(
@@ -173,52 +188,53 @@ class AnimationGenerator:
         )
 
         model = await Live2DModelGenerator(
-            provider_registry_path=None,
+            provider_registry_path=self.provider_registry_path,
             output_dir=run_dir,
             privacy_mode=self.privacy_mode,
             use_mock=self.use_mock,
         ).text_to_live2d(character_description)
+        provider_trace["model.live2d.generate"] = model.provider_id
 
         shots = []
         for index, shot in enumerate(storyboard):
             shot_id = f"shot_{index + 1:02d}"
-            audio_path = run_dir / "audio" / f"{shot_id}.txt"
-            video_path = run_dir / "shots" / f"{shot_id}.mp4"
-            audio_path.parent.mkdir(parents=True, exist_ok=True)
-            video_path.parent.mkdir(parents=True, exist_ok=True)
-            audio_path.write_text(
-                f"provider={provider_trace['voice.generate']}\ndialogue={shot['dialogue']}\n",
-                encoding="utf-8",
+            voice_result = await router.invoke(
+                "voice.generate",
+                {
+                    "text": str(shot["dialogue"]),
+                    "emotion": str(shot["emotion"]),
+                    "shot_id": shot_id,
+                },
             )
-            video_path.write_text(
-                "\n".join(
-                    [
-                        "L2MAS mock shot artifact",
-                        f"provider={provider_trace['motion.generate']}",
-                        f"model={model.model_path}",
-                        f"dialogue={shot['dialogue']}",
-                        f"resolution={resolution}",
-                        f"fps={fps}",
-                    ]
-                ),
-                encoding="utf-8",
+            provider_trace["voice.generate"] = voice_result.provider_id
+            if voice_result.warnings:
+                provider_warnings.setdefault("voice.generate", []).extend(voice_result.warnings)
+
+            motion_result = await router.invoke(
+                "motion.generate",
+                {
+                    "shot": shot,
+                    "model_path": model.model_path,
+                    "audio_path": voice_result.artifacts.get("audio_path", ""),
+                    "resolution": resolution,
+                    "fps": fps,
+                },
             )
+            provider_trace["motion.generate"] = motion_result.provider_id
+            if motion_result.warnings:
+                provider_warnings.setdefault("motion.generate", []).extend(motion_result.warnings)
+            video_path = motion_result.artifacts.get("video_path") or motion_result.artifacts.get("artifact_path", "")
             shots.append(
                 ShotArtifact(
                     shot_id=shot_id,
                     dialogue=shot["dialogue"],
                     video_path=str(video_path),
-                    audio_path=str(audio_path),
+                    audio_path=str(voice_result.artifacts.get("audio_path", "")),
                     duration=float(shot["duration"]),
                 )
             )
 
-        compose_result = await ProviderRouter(
-            registry=self.registry,
-            output_dir=run_dir,
-            privacy_mode=self.privacy_mode,
-            prefer_mock=self.use_mock,
-        ).invoke(
+        compose_result = await router.invoke(
             "video.compose",
             {
                 "shots": [asdict(shot) for shot in shots],
@@ -229,6 +245,8 @@ class AnimationGenerator:
         )
         final_path = Path(compose_result.artifacts["video_path"])
         provider_trace["video.compose"] = compose_result.provider_id
+        if compose_result.warnings:
+            provider_warnings.setdefault("video.compose", []).extend(compose_result.warnings)
         await asyncio.sleep(0)
 
         self.last_result = AnimationResult(
@@ -238,6 +256,7 @@ class AnimationGenerator:
             total_time=time.perf_counter() - start,
             shots=shots,
             provider_trace=provider_trace,
+            provider_warnings=provider_warnings,
             output_dir=str(run_dir),
         )
         return self.last_result

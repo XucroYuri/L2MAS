@@ -10,6 +10,13 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 - GitHub discovery profile with search-focused metadata, topics, labels, starter issues, and social preview guidance.
 - README at-a-glance section for faster project recognition by GitHub visitors and searchers.
+- v0.2.0 provider adapter runtime for OpenAI-compatible, Ollama, ComfyUI, generic REST, ElevenLabs TTS, MCP template, mock, and local FFmpeg paths.
+- Provider status metadata and verification matrix for `verified`, `experimental`, `template`, and `mock` disclosure.
+- Optional live provider tests gated by explicit `L2MAS_LIVE_*` environment variables.
+
+### Changed
+
+- Animation pipeline now invokes routed `voice.generate`, `motion.generate`, and `video.compose` providers and records fallback warnings.
 
 ## [0.1.0] - 2026-05-30
 

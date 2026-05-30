@@ -57,6 +57,24 @@ class MockPipelineTest(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(video_path.exists())
             self.assertGreater(video_path.stat().st_size, 1000)
 
+    async def test_animation_generator_records_provider_fallback_warnings(self):
+        async def failing_transport(request):
+            return {"status_code": 503, "json": {"error": "service unavailable"}}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            generator = AnimationGenerator(output_dir=tmp, use_mock=False, http_transport=failing_transport)
+
+            result = await generator.generate(
+                script="Shot 1: Fallback voice provider.",
+                character_description="friendly anime presenter",
+                resolution="320x180",
+                fps=12,
+            )
+
+            self.assertEqual(result.provider_trace["voice.generate"], "mock-voice")
+            self.assertIn("local-tts", result.provider_warnings["voice.generate"][0])
+            self.assertTrue(Path(result.shots[0].audio_path).exists())
+
     async def test_generate_stream_emits_progress_and_final_result(self):
         with tempfile.TemporaryDirectory() as tmp:
             generator = AnimationGenerator(output_dir=tmp, use_mock=True)

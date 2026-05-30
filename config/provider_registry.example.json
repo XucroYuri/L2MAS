@@ -16,6 +16,10 @@
       "hardware_profile": "managed cloud",
       "priority": 10,
       "fallbacks": ["local-ollama-agent", "local-vllm-agent"],
+      "status": "experimental",
+      "live_test_env": "L2MAS_LIVE_QWEN",
+      "auth_env": "QWEN_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/models"},
       "privacy_mode": "remote"
     },
     {
@@ -28,6 +32,9 @@
       "hardware_profile": "developer workstation",
       "priority": 20,
       "fallbacks": ["local-vllm-agent"],
+      "status": "experimental",
+      "live_test_env": "L2MAS_LIVE_OLLAMA",
+      "healthcheck": {"method": "GET", "path": "/api/tags"},
       "privacy_mode": "local-only"
     },
     {
@@ -40,6 +47,9 @@
       "hardware_profile": "single or multi GPU server",
       "priority": 30,
       "fallbacks": ["local-lmstudio-agent"],
+      "status": "experimental",
+      "live_test_env": "L2MAS_LIVE_VLLM",
+      "healthcheck": {"method": "GET", "path": "/models"},
       "privacy_mode": "local-only"
     },
     {
@@ -52,6 +62,9 @@
       "hardware_profile": "desktop workstation",
       "priority": 40,
       "fallbacks": ["local-llamacpp-agent"],
+      "status": "experimental",
+      "live_test_env": "L2MAS_LIVE_LMSTUDIO",
+      "healthcheck": {"method": "GET", "path": "/models"},
       "privacy_mode": "local-only"
     },
     {
@@ -64,6 +77,9 @@
       "hardware_profile": "CPU, Apple Silicon, or GPU offload",
       "priority": 50,
       "fallbacks": ["mock-agent"],
+      "status": "experimental",
+      "live_test_env": "L2MAS_LIVE_LLAMACPP",
+      "healthcheck": {"method": "GET", "path": "/models"},
       "privacy_mode": "local-only"
     },
     {
@@ -76,6 +92,10 @@
       "hardware_profile": "managed cloud",
       "priority": 10,
       "fallbacks": ["local-comfyui-visual"],
+      "status": "experimental",
+      "live_test_env": "L2MAS_LIVE_GEMINI",
+      "auth_env": "GEMINI_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/v1beta/models"},
       "privacy_mode": "remote"
     },
     {
@@ -88,6 +108,9 @@
       "hardware_profile": "GPU workstation",
       "priority": 20,
       "fallbacks": ["local-diffusers-visual"],
+      "status": "experimental",
+      "live_test_env": "L2MAS_LIVE_COMFYUI",
+      "healthcheck": {"method": "GET", "path": "/system_stats"},
       "privacy_mode": "local-only"
     },
     {
@@ -100,6 +123,9 @@
       "hardware_profile": "GPU workstation",
       "priority": 30,
       "fallbacks": ["mock-visual"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_DIFFUSERS",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "local-only"
     },
     {
@@ -112,6 +138,9 @@
       "hardware_profile": "GPU workstation with Textoon dependencies",
       "priority": 10,
       "fallbacks": ["mock-live2d-model"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_TEXTOON_LOCAL",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "local-only"
     },
     {
@@ -124,6 +153,10 @@
       "hardware_profile": "managed cloud",
       "priority": 20,
       "fallbacks": ["local-textoon"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_TEXTOON",
+      "auth_env": "TEXTOON_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "remote"
     },
     {
@@ -136,6 +169,10 @@
       "hardware_profile": "managed cloud",
       "priority": 10,
       "fallbacks": ["local-tts"],
+      "status": "experimental",
+      "live_test_env": "L2MAS_LIVE_ELEVENLABS",
+      "auth_env": "ELEVENLABS_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/v1/models"},
       "privacy_mode": "remote"
     },
     {
@@ -148,6 +185,24 @@
       "hardware_profile": "CPU or GPU workstation",
       "priority": 20,
       "fallbacks": ["mock-voice"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_LOCAL_TTS",
+      "healthcheck": {"method": "GET", "path": "/health"},
+      "privacy_mode": "local-only"
+    },
+    {
+      "provider_id": "local-openai-whisper",
+      "locality": "local",
+      "protocol": "openai-compatible",
+      "capabilities": ["speech.transcribe"],
+      "endpoint": "http://localhost:8030/v1",
+      "models": ["whisper", "whisper.cpp"],
+      "hardware_profile": "CPU or GPU workstation",
+      "priority": 10,
+      "fallbacks": ["local-whisper"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_OPENAI_WHISPER",
+      "healthcheck": {"method": "GET", "path": "/models"},
       "privacy_mode": "local-only"
     },
     {
@@ -156,10 +211,13 @@
       "protocol": "custom-rest",
       "capabilities": ["speech.transcribe"],
       "endpoint": "http://localhost:8030",
-      "models": ["whisper", "whisper.cpp"],
+      "models": ["whisper-rest", "whisper.cpp-rest"],
       "hardware_profile": "CPU or GPU workstation",
-      "priority": 10,
+      "priority": 20,
       "fallbacks": ["mock-transcribe"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_WHISPER",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "local-only"
     },
     {
@@ -172,6 +230,10 @@
       "hardware_profile": "managed cloud",
       "priority": 20,
       "fallbacks": ["local-whisper"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_CLOUD_STT",
+      "auth_env": "CLOUD_STT_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "remote"
     },
     {
@@ -184,6 +246,9 @@
       "hardware_profile": "GPU workstation recommended",
       "priority": 10,
       "fallbacks": ["mock-voice-convert"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_RVC",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "local-only"
     },
     {
@@ -196,6 +261,10 @@
       "hardware_profile": "managed cloud",
       "priority": 20,
       "fallbacks": ["local-rvc"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_VOICE_CONVERSION",
+      "auth_env": "VOICE_CONVERSION_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "remote"
     },
     {
@@ -208,6 +277,9 @@
       "hardware_profile": "CPU workstation",
       "priority": 10,
       "fallbacks": ["mock-lipsync"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_LIPSYNC",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "local-only"
     },
     {
@@ -220,6 +292,10 @@
       "hardware_profile": "managed cloud",
       "priority": 20,
       "fallbacks": ["local-lipsync"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_CLOUD_LIPSYNC",
+      "auth_env": "CLOUD_LIPSYNC_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "remote"
     },
     {
@@ -232,6 +308,9 @@
       "hardware_profile": "CPU workstation",
       "priority": 10,
       "fallbacks": ["mock-motion"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_LIVE2D_MOTION",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "local-only"
     },
     {
@@ -244,6 +323,10 @@
       "hardware_profile": "managed cloud",
       "priority": 20,
       "fallbacks": ["local-live2d-motion"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_CLOUD_MOTION",
+      "auth_env": "CLOUD_MOTION_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "remote"
     },
     {
@@ -256,6 +339,9 @@
       "hardware_profile": "CPU workstation",
       "priority": 10,
       "fallbacks": ["mock-render"],
+      "status": "verified",
+      "live_test_env": "L2MAS_LIVE_FFMPEG",
+      "healthcheck": {"type": "binary", "name": "ffmpeg"},
       "privacy_mode": "local-only"
     },
     {
@@ -268,6 +354,10 @@
       "hardware_profile": "managed cloud",
       "priority": 20,
       "fallbacks": ["local-ffmpeg"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_CLOUD_RENDER",
+      "auth_env": "CLOUD_RENDER_API_KEY",
+      "healthcheck": {"method": "GET", "path": "/health"},
       "privacy_mode": "remote"
     },
     {
@@ -280,6 +370,9 @@
       "hardware_profile": "CPU or GPU workstation",
       "priority": 30,
       "fallbacks": ["mock-agent"],
+      "status": "template",
+      "live_test_env": "L2MAS_LIVE_LOCAL_EMBEDDING",
+      "healthcheck": {"method": "GET", "path": "/models"},
       "privacy_mode": "local-only"
     },
     {
@@ -292,6 +385,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     },
     {
@@ -304,6 +398,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     },
     {
@@ -316,6 +411,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     },
     {
@@ -328,6 +424,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     },
     {
@@ -340,6 +437,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     },
     {
@@ -352,6 +450,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     },
     {
@@ -364,6 +463,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     },
     {
@@ -376,6 +476,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     },
     {
@@ -388,6 +489,7 @@
       "hardware_profile": "none",
       "priority": 100,
       "fallbacks": [],
+      "status": "mock",
       "privacy_mode": "local-only"
     }
   ]

@@ -50,6 +50,10 @@ Every provider entry uses the same fields:
 | `priority` | yes | Lower number is preferred |
 | `fallbacks` | yes | Provider ids to try next |
 | `privacy_mode` | yes | `remote`, `local-only`, or `hybrid` |
+| `status` | optional | `verified`, `experimental`, `template`, or `mock`; defaults to `mock` for mock endpoints and `template` otherwise |
+| `live_test_env` | optional | Environment variable that enables live tests for this provider |
+| `auth_env` | optional | Environment variable that supplies an API key or token |
+| `healthcheck` | optional | HTTP or binary health probe metadata |
 
 Routing defaults:
 
@@ -57,6 +61,8 @@ Routing defaults:
 2. Filter by privacy mode. `local-only` tasks may not call remote providers.
 3. Sort by priority.
 4. Use fallback providers if the selected provider fails or times out.
+
+Provider disclosure must follow [../provider-verification.md](../provider-verification.md). Only `verified` providers may be described as live-validated.
 
 ## 5. MVP Stage
 
@@ -133,4 +139,3 @@ Benchmark reports must include:
 - Do not require Kubernetes for MVP.
 - Do not require cloud API keys for smoke tests.
 - Do not add a new model-specific code path when capability routing can cover the need.
-

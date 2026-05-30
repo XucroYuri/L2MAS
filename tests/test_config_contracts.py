@@ -26,6 +26,38 @@ class ConfigContractTest(unittest.TestCase):
             for capability in agent["capabilities"]:
                 self.assertIn(capability, STANDARD_CAPABILITIES)
 
+    def test_provider_statuses_are_documented_and_verified_claims_have_records(self):
+        registry = json.loads(Path("config/provider_registry.example.json").read_text(encoding="utf-8"))
+        verification_path = Path("docs/provider-verification.md")
+        verification = verification_path.read_text(encoding="utf-8")
+        allowed = {"verified", "experimental", "template", "mock"}
+
+        for provider in registry["providers"]:
+            status = provider.get("status")
+            self.assertIn(status, allowed)
+            if status == "verified":
+                self.assertIn(f"| `{provider['provider_id']}` |", verification)
+                self.assertIn("| verified |", verification)
+
+    def test_public_docs_do_not_overclaim_unverified_providers(self):
+        registry = json.loads(Path("config/provider_registry.example.json").read_text(encoding="utf-8"))
+        verified = {provider["provider_id"] for provider in registry["providers"] if provider.get("status") == "verified"}
+        unverified = {
+            provider["provider_id"]
+            for provider in registry["providers"]
+            if provider.get("status") in {"experimental", "template"}
+        }
+        docs = "\n".join(
+            Path(path).read_text(encoding="utf-8")
+            for path in ["README.md", "docs/provider-verification.md"]
+            if Path(path).exists()
+        )
+
+        for provider_id in verified:
+            self.assertIn(provider_id, docs)
+        for provider_id in unverified:
+            self.assertNotIn(f"`{provider_id}` | verified |", docs)
+
 
 if __name__ == "__main__":
     unittest.main()
