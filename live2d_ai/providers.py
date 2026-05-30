@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+from shutil import which
 from uuid import uuid4
 
 from .provider_registry import Provider, ProviderRegistry
@@ -44,6 +46,9 @@ class ProviderRouter:
         provider = self.select(capability)
         if provider.is_mock:
             return self._invoke_mock(provider, capability, payload)
+
+        if capability == "video.compose" and provider.provider_id == "local-ffmpeg":
+            return self._invoke_local_ffmpeg(provider, payload)
 
         return ProviderInvocationResult(
             capability=capability,
@@ -95,4 +100,48 @@ class ProviderRouter:
             provider_id=provider.provider_id,
             artifacts={"artifact_path": str(artifact_path)},
             data={},
+        )
+
+    def _invoke_local_ffmpeg(
+        self,
+        provider: Provider,
+        payload: dict[str, object],
+    ) -> ProviderInvocationResult:
+        ffmpeg = which("ffmpeg")
+        if not ffmpeg:
+            fallback = self.registry.get("mock-render")
+            return self._invoke_mock(fallback, "video.compose", payload)
+
+        run_dir = self.output_dir / "provider-router"
+        run_dir.mkdir(parents=True, exist_ok=True)
+        video_path = run_dir / f"video_{uuid4().hex[:8]}.mp4"
+        resolution = str(payload.get("resolution", "640x360"))
+        fps = int(payload.get("fps", 24))
+        duration = float(payload.get("duration", 1.0))
+        duration = max(duration, 0.5)
+
+        subprocess.run(
+            [
+                ffmpeg,
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-y",
+                "-f",
+                "lavfi",
+                "-i",
+                f"testsrc=size={resolution}:rate={fps}",
+                "-t",
+                f"{duration:.3f}",
+                "-pix_fmt",
+                "yuv420p",
+                str(video_path),
+            ],
+            check=True,
+        )
+        return ProviderInvocationResult(
+            capability="video.compose",
+            provider_id=provider.provider_id,
+            artifacts={"video_path": str(video_path)},
+            data={"duration": duration, "resolution": resolution, "fps": fps},
         )

@@ -10,6 +10,7 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 - Deterministic local mock MVP pipeline for provider routing and smoke tests.
 - Local A2A/MCP compatibility layers for prototype imports and mock tool calls.
+- Local FFmpeg `video.compose` provider for real MP4 container smoke tests.
 - Apache-2.0 license and open-source community files.
 - GitHub issue templates, pull request template, and lightweight CI checks.
 - Two-stage MVP to v2.0 architecture documentation.

@@ -168,6 +168,8 @@ Run the deterministic local MVP smoke tests:
 python3 -m unittest discover -s tests -v
 ```
 
+If FFmpeg is available, the non-mock path can produce a real local MP4 container for `video.compose` while earlier generation stages remain deterministic prototype artifacts.
+
 Use a local LLM by starting any compatible endpoint, then prioritizing that provider in the registry:
 
 - Ollama: `http://localhost:11434`

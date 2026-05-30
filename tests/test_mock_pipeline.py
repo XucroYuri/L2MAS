@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
+from shutil import which
 
 from live2d_ai import AnimationGenerator, Live2DModelGenerator
 
@@ -38,6 +39,23 @@ class MockPipelineTest(unittest.IsolatedAsyncioTestCase):
             self.assertGreaterEqual(len(result.shots), 2)
             self.assertEqual(result.provider_trace["voice.generate"], "mock-voice")
             self.assertEqual(result.provider_trace["video.compose"], "mock-render")
+
+    @unittest.skipUnless(which("ffmpeg"), "ffmpeg is not available")
+    async def test_animation_generator_can_compose_real_local_video(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            generator = AnimationGenerator(output_dir=tmp, use_mock=False)
+
+            result = await generator.generate(
+                script="Shot 1: Real container smoke test.",
+                character_description="friendly anime presenter",
+                resolution="320x180",
+                fps=12,
+            )
+
+            video_path = Path(result.video_path)
+            self.assertEqual(result.provider_trace["video.compose"], "local-ffmpeg")
+            self.assertTrue(video_path.exists())
+            self.assertGreater(video_path.stat().st_size, 1000)
 
     async def test_generate_stream_emits_progress_and_final_result(self):
         with tempfile.TemporaryDirectory() as tmp:

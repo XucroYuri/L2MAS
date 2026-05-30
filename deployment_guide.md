@@ -125,6 +125,8 @@ python3 examples/test_end_to_end.py
 
 The smoke path writes placeholder artifacts under `output/mvp/` and does not require cloud API keys.
 
+When FFmpeg is installed, tests also exercise a local `video.compose` provider that emits a real MP4 container. This is still a prototype render path: it proves provider replacement and artifact wiring, not Live2D visual fidelity.
+
 ## 4. MVP Completion Criteria
 
 The MVP is complete when the following flow is reproducible without cloud keys:

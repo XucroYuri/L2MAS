@@ -10,6 +10,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from .provider_registry import ProviderRegistry
+from .providers import ProviderRouter
 
 
 @dataclass(frozen=True)
@@ -212,21 +213,22 @@ class AnimationGenerator:
                 )
             )
 
-        final_path = run_dir / "final.mp4"
-        final_path.write_text(
-            json.dumps(
-                {
-                    "kind": "L2MAS mock final video",
-                    "provider_id": provider_trace["video.compose"],
-                    "shots": [asdict(shot) for shot in shots],
-                    "resolution": resolution,
-                    "fps": fps,
-                },
-                ensure_ascii=False,
-                indent=2,
-            ),
-            encoding="utf-8",
+        compose_result = await ProviderRouter(
+            registry=self.registry,
+            output_dir=run_dir,
+            privacy_mode=self.privacy_mode,
+            prefer_mock=self.use_mock,
+        ).invoke(
+            "video.compose",
+            {
+                "shots": [asdict(shot) for shot in shots],
+                "resolution": resolution,
+                "fps": fps,
+                "duration": sum(shot.duration for shot in shots),
+            },
         )
+        final_path = Path(compose_result.artifacts["video_path"])
+        provider_trace["video.compose"] = compose_result.provider_id
         await asyncio.sleep(0)
 
         self.last_result = AnimationResult(
