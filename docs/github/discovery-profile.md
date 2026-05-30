@@ -12,7 +12,7 @@ This profile keeps the public repository presentation aligned with the project's
 | Homepage | `https://github.com/XucroYuri/L2MAS/releases/latest` |
 | License | `Apache-2.0` |
 | Default branch | `main` |
-| Discussions | Enabled |
+| Discussions | Enabled; welcome thread: [#11](https://github.com/XucroYuri/L2MAS/discussions/11) |
 | Wiki | Disabled; canonical documentation stays in Git. |
 
 ## Topics
