@@ -1,60 +1,17 @@
-# Live2D Multi-Agent Animation System
-# Python Dependencies
+# L2MAS runtime dependencies for the current MVP prototype.
+#
+# A2A and MCP compatibility layers are provided locally in ./a2a and ./mcp
+# until the upstream protocol packages and versions stabilize for this repo.
+# Live2D Cubism SDK, Textoon, ComfyUI, Diffusers, and media-model workers are
+# optional provider integrations and are not installed by the default MVP path.
 
-# Core A2A and MCP
-a2a-protocol==1.0.0
-mcp==2.1.0
-mcp-client==2.1.0
-mcp-server==2.1.0
-
-# LangChain ecosystem
-langchain==0.2.0
-langchain-openai==0.1.0
-langgraph==0.5.0
-langchain-community==0.2.0
-
-# Pydantic for data validation
 pydantic==2.7.0
 pydantic-settings==2.2.0
-
-# Async IO
-asyncio==3.4.3
-aiohttp==3.9.5
+python-dotenv==1.0.1
 httpx==0.27.0
-
-# Live2D related
-live2d-py==5.3.0
-cubism-sdk==5.3.03
-
-# Image processing
-Pillow==10.3.0
-opencv-python==4.9.0.80
-numpy==1.26.4
-
-# Audio processing
-librosa==0.10.2
-soundfile==0.12.1
-
-# Video processing
-ffmpeg-python==0.2.0
-
-# API clients
-elevenlabs==1.7.0
-openai==1.30.0
-google-generativeai==0.5.4
-
-# Logging and monitoring
+aiohttp==3.9.5
+requests==2.32.3
 prometheus-client==0.20.0
 structlog==24.2.0
-
-# Utilities
-python-dotenv==1.0.1
-uuid==1.30
 typing-extensions==4.11.0
 tqdm==4.66.4
-requests==2.32.3
-
-# Testing
-pytest==8.2.0
-pytest-asyncio==0.23.6
-pytest-mock==3.14.0

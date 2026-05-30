@@ -8,6 +8,8 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ### Added
 
+- Deterministic local mock MVP pipeline for provider routing and smoke tests.
+- Local A2A/MCP compatibility layers for prototype imports and mock tool calls.
 - Apache-2.0 license and open-source community files.
 - GitHub issue templates, pull request template, and lightweight CI checks.
 - Two-stage MVP to v2.0 architecture documentation.
@@ -15,5 +17,6 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ### Changed
 
+- CI now runs static checks, dependency metadata checks, Python compile checks, and MVP smoke tests.
 - Project framing now treats Qwen3.7-Max, Gemini Omni, Eleven v3, Textoon, and Live2D Cubism 5.3 as capability baselines instead of hard dependencies.
 - Deployment narrative now describes target metrics and validation work instead of completed production guarantees.

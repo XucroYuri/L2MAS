@@ -114,7 +114,16 @@ python3 -m json.tool config/provider_registry.example.json > /dev/null
 docker compose config
 ```
 
-This validates configuration shape. The repository still needs real/mock MCP server implementations, SDK wrappers, and runtime tests before claiming full startup success.
+This validates configuration shape. The repository now includes a deterministic mock MVP path for smoke tests, but still needs real MCP server implementations, SDK wrappers, and provider adapters before claiming full startup success.
+
+### 3.6 Local mock smoke test
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 examples/test_end_to_end.py
+```
+
+The smoke path writes placeholder artifacts under `output/mvp/` and does not require cloud API keys.
 
 ## 4. MVP Completion Criteria
 

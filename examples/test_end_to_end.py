@@ -5,6 +5,11 @@ End-to-end test script for the Live2D Multi-Agent Animation System
 
 import asyncio
 import logging
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from live2d_ai import AnimationGenerator
 
 logging.basicConfig(level=logging.INFO)
@@ -27,7 +32,7 @@ async def main():
     health = await generator.health_check()
     
     if health["status"] == "healthy":
-        print(f"✅ All services healthy!")
+        print("✅ All services healthy!")
         print(f"   - Registered agents: {len(health['agents'])}")
         for agent in health['agents']:
             print(f"     - {agent['name']}: {agent['status']}")
@@ -58,6 +63,7 @@ async def main():
     # Start generation
     print("\n⚡ Starting generation...")
     
+    result = None
     async for progress in generator.generate_stream(
         script=script,
         character_description=character,
@@ -65,6 +71,11 @@ async def main():
         fps=60
     ):
         print(f"   Progress: {progress['stage']} - {progress['percent']}%")
+        if progress["stage"] == "complete":
+            result = progress["result"]
+    
+    if result is None:
+        raise RuntimeError("Generation stream finished without a final result")
     
     print("\n✅ Generation complete!")
     print(f"📁 Video file: {result.video_path}")

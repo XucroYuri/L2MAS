@@ -4,11 +4,10 @@ Modeling Agent - Generates Live2D models from text or images using Textoon
 
 import asyncio
 import logging
-import os
 from typing import Optional
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from a2a import agent_task, AgentCapability
 
 from agents.base.agent import BaseAgent

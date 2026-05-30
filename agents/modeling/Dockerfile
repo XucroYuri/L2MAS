@@ -15,6 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy agent code
 COPY agents/base/ ./agents/base/
 COPY agents/modeling/ ./agents/modeling/
+COPY a2a/ ./a2a/
+COPY mcp/ ./mcp/
+COPY live2d_ai/ ./live2d_ai/
 COPY config/ ./config/
 
 # Expose port

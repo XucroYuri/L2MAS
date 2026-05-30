@@ -4,11 +4,10 @@ Animation Agent - Generates animation clips for each shot
 
 import asyncio
 import logging
-import os
 from typing import List, Dict, Any, Optional
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from a2a import agent_task, AgentCapability
 
 from agents.base.agent import BaseAgent

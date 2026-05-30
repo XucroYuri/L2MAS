@@ -47,6 +47,15 @@ python3 -m json.tool config/provider_registry.example.json > /dev/null
 docker compose config
 ```
 
+本地 mock smoke test：
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 examples/test_end_to_end.py
+```
+
+mock 路径会在 `output/mvp/` 下写入占位 artifact，不需要云端 API key。
+
 ## 3. Provider Registry
 
 Provider registry 是模型和工具的统一入口。Agent 只依赖 capability，例如 `script.plan`、`voice.generate`、`video.compose`，不直接依赖固定厂商或模型。

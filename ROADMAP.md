@@ -5,7 +5,7 @@ The full architecture narrative lives in [docs/architecture/two-stage-roadmap.md
 ## MVP Prototype
 
 - Run an end-to-end local flow from script to rendered video.
-- Keep mock/local providers available when cloud API keys are absent.
+- Keep the deterministic mock path available when cloud API keys are absent.
 - Stabilize provider registry and capability routing.
 - Validate FFmpeg local rendering as the default composition path.
 - Add focused tests for registry parsing, routing, and artifact schemas.

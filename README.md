@@ -162,6 +162,12 @@ python3 -m json.tool config/mcp_config.json > /dev/null
 python3 -m json.tool config/provider_registry.example.json > /dev/null
 ```
 
+Run the deterministic local MVP smoke tests:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
 Use a local LLM by starting any compatible endpoint, then prioritizing that provider in the registry:
 
 - Ollama: `http://localhost:11434`

@@ -5,6 +5,11 @@ Test script for text-to-Live2D modeling
 
 import asyncio
 import argparse
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from live2d_ai import Live2DModelGenerator
 
 async def main():
@@ -27,12 +32,12 @@ async def main():
         generate_physics=True
     )
     
-    print(f"\n✅ Model generated!")
+    print("\n✅ Model generated!")
     print(f"📦 Model path: {result.model_path}")
     print(f"🖼️  Preview: {result.preview_url}")
     print(f"⏱️  Generation time: {result.generation_time:.1f}s")
     
-    print(f"\n📊 Parameters:")
+    print("\n📊 Parameters:")
     for key, value in result.parameters.items():
         print(f"   - {key}: {value}")
 

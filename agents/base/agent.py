@@ -4,11 +4,10 @@ Base Agent class for A2A protocol
 
 import asyncio
 import logging
+import os
 from typing import Any, Dict, List, Optional
-from uuid import uuid4
 
-from a2a import Agent, agent_task, AgentCapability
-from pydantic import BaseModel, Field
+from a2a import Agent, AgentCapability
 from mcp import MCPClient
 
 logger = logging.getLogger(__name__)
@@ -32,9 +31,8 @@ class BaseAgent(Agent):
         logger.info(f"Initializing agent: {self.name}")
         
         # Connect to MCP gateway
-        self.mcp_client = MCPClient.from_config_file(
-            "/app/config/mcp_config.json"
-        )
+        config_path = os.getenv("MCP_CONFIG_PATH", "/app/config/mcp_config.json")
+        self.mcp_client = MCPClient.from_config_file(config_path)
         await self.mcp_client.initialize()
         
         logger.info(f"Agent {self.name} initialized successfully")
