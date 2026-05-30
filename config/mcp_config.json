@@ -1,0 +1,96 @@
+{
+  "version": "2025-11-25",
+  "transport": "streamable-http",
+  "gateway": {
+    "host": "mcp-gateway",
+    "port": 8080,
+    "auth": "per_request",
+    "load_balancing": "round_robin"
+  },
+  "servers": [
+    {
+      "name": "live2d-mcp-1",
+      "url": "http://live2d-mcp-1:8000/mcp",
+      "capabilities": ["live2d", "animation", "rendering"]
+    },
+    {
+      "name": "live2d-mcp-2",
+      "url": "http://live2d-mcp-2:8000/mcp",
+      "capabilities": ["live2d", "animation", "rendering"]
+    },
+    {
+      "name": "live2d-mcp-3",
+      "url": "http://live2d-mcp-3:8000/mcp",
+      "capabilities": ["live2d", "animation", "rendering"]
+    },
+    {
+      "name": "textoon-mcp",
+      "url": "http://textoon-mcp:8000/mcp",
+      "capabilities": ["textoon", "text_to_live2d", "image_to_live2d"]
+    },
+    {
+      "name": "tts-mcp",
+      "url": "http://tts-mcp:8000/mcp",
+      "capabilities": ["tts", "elevenlabs", "phoneme_extraction"]
+    },
+    {
+      "name": "ffmpeg-mcp",
+      "url": "http://ffmpeg-mcp:8000/mcp",
+      "capabilities": ["ffmpeg", "video_processing", "audio_mixing"]
+    }
+  ],
+  "tools": [
+    {
+      "name": "textoon_generate",
+      "server": "textoon-mcp",
+      "description": "Generate Live2D model from text description"
+    },
+    {
+      "name": "image_to_live2d",
+      "server": "textoon-mcp",
+      "description": "Generate Live2D model from image"
+    },
+    {
+      "name": "animate_live2d_model",
+      "server": "live2d-mcp-1",
+      "description": "Animate a Live2D model with parameters"
+    },
+    {
+      "name": "search_action_library",
+      "server": "live2d-mcp-1",
+      "description": "Search action library for animation parameters"
+    },
+    {
+      "name": "elevenlabs_tts",
+      "server": "tts-mcp",
+      "description": "Generate TTS audio with ElevenLabs"
+    },
+    {
+      "name": "concat_videos",
+      "server": "ffmpeg-mcp",
+      "description": "Concatenate multiple video files"
+    },
+    {
+      "name": "process_video",
+      "server": "ffmpeg-mcp",
+      "description": "Post-process video with audio mixing"
+    }
+  ],
+  "security": {
+    "tls": true,
+    "cors": {
+      "allowed_origins": ["*"]
+    },
+    "rate_limiting": {
+      "requests_per_minute": 100
+    }
+  },
+  "observability": {
+    "prometheus": true,
+    "metrics_port": 9090,
+    "logging": {
+      "level": "INFO",
+      "format": "json"
+    }
+  }
+}

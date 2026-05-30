@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# Local runtime artifacts
+models/
+output/
+logs/
+tmp/
+temp/
+
+# Media and generated assets
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+*.m4a
+*.model3.json
+*.moc3
+
+# Node / frontend artifacts
+node_modules/
+dist/
+build/
+
+# Docker / OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+

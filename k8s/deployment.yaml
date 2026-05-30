@@ -1,0 +1,584 @@
+# Kubernetes Deployment for Live2D Multi-Agent System
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: live2d-system
+---
+# A2A Registry
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a2a-registry
+  namespace: live2d-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: a2a-registry
+  template:
+    metadata:
+      labels:
+        app: a2a-registry
+    spec:
+      containers:
+      - name: a2a-registry
+        image: a2a/registry:1.0
+        ports:
+        - containerPort: 50051
+        env:
+        - name: A2A_REGISTRY_HOST
+          value: "0.0.0.0"
+        - name: A2A_REGISTRY_PORT
+          value: "50051"
+        - name: A2A_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: jwt-secret
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+      volumes:
+      - name: config-volume
+        configMap:
+          name: a2a-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: a2a-registry
+  namespace: live2d-system
+spec:
+  selector:
+    app: a2a-registry
+  ports:
+  - port: 50051
+    targetPort: 50051
+---
+# MCP Gateway
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-gateway
+  namespace: live2d-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mcp-gateway
+  template:
+    metadata:
+      labels:
+        app: mcp-gateway
+    spec:
+      containers:
+      - name: mcp-gateway
+        image: mcp/gateway:2.1
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MCP_GATEWAY_HOST
+          value: "0.0.0.0"
+        - name: MCP_GATEWAY_PORT
+          value: "8080"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+      volumes:
+      - name: config-volume
+        configMap:
+          name: mcp-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-gateway
+  namespace: live2d-system
+spec:
+  selector:
+    app: mcp-gateway
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+# Live2D MCP Servers
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: live2d-mcp
+  namespace: live2d-system
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: live2d-mcp
+  template:
+    metadata:
+      labels:
+        app: live2d-mcp
+    spec:
+      containers:
+      - name: live2d-mcp
+        image: live2d/mcp-server:5.3
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+        resources:
+          requests:
+            cpu: 2000m
+            memory: 8Gi
+            nvidia.com/gpu: 1
+          limits:
+            cpu: 4000m
+            memory: 16Gi
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: models-volume
+          mountPath: /opt/live2d/models
+        - name: output-volume
+          mountPath: /opt/live2d/output
+      volumes:
+      - name: models-volume
+        persistentVolumeClaim:
+          claimName: models-pvc
+      - name: output-volume
+        persistentVolumeClaim:
+          claimName: output-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: live2d-mcp
+  namespace: live2d-system
+spec:
+  selector:
+    app: live2d-mcp
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+# Textoon MCP Server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: textoon-mcp
+  namespace: live2d-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: textoon-mcp
+  template:
+    metadata:
+      labels:
+        app: textoon-mcp
+    spec:
+      containers:
+      - name: textoon-mcp
+        image: textoon/mcp-server:1.0
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+        - name: TEXTOON_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-keys
+              key: textoon-api-key
+        resources:
+          requests:
+            cpu: 2000m
+            memory: 8Gi
+            nvidia.com/gpu: 1
+          limits:
+            cpu: 4000m
+            memory: 16Gi
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: models-volume
+          mountPath: /opt/live2d/models
+      volumes:
+      - name: models-volume
+        persistentVolumeClaim:
+          claimName: models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: textoon-mcp
+  namespace: live2d-system
+spec:
+  selector:
+    app: textoon-mcp
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+# Director Agent
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: director-agent
+  namespace: live2d-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: director-agent
+  template:
+    metadata:
+      labels:
+        app: director-agent
+    spec:
+      containers:
+      - name: director-agent
+        image: live2d/director-agent:2.0
+        env:
+        - name: QWEN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-keys
+              key: qwen-api-key
+        - name: A2A_REGISTRY_URL
+          value: "http://a2a-registry:50051"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: director-agent
+  namespace: live2d-system
+spec:
+  selector:
+    app: director-agent
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+# Modeling Agent
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: modeling-agent
+  namespace: live2d-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: modeling-agent
+  template:
+    metadata:
+      labels:
+        app: modeling-agent
+    spec:
+      containers:
+      - name: modeling-agent
+        image: live2d/modeling-agent:2.0
+        env:
+        - name: A2A_REGISTRY_URL
+          value: "http://a2a-registry:50051"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: modeling-agent
+  namespace: live2d-system
+spec:
+  selector:
+    app: modeling-agent
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+# Animation Agent
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: animation-agent
+  namespace: live2d-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: animation-agent
+  template:
+    metadata:
+      labels:
+        app: animation-agent
+    spec:
+      containers:
+      - name: animation-agent
+        image: live2d/animation-agent:2.0
+        env:
+        - name: A2A_REGISTRY_URL
+          value: "http://a2a-registry:50051"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: animation-agent
+  namespace: live2d-system
+spec:
+  selector:
+    app: animation-agent
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+# Voice Agent
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voice-agent
+  namespace: live2d-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: voice-agent
+  template:
+    metadata:
+      labels:
+        app: voice-agent
+    spec:
+      containers:
+      - name: voice-agent
+        image: live2d/voice-agent:2.0
+        env:
+        - name: ELEVENLABS_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-keys
+              key: elevenlabs-api-key
+        - name: A2A_REGISTRY_URL
+          value: "http://a2a-registry:50051"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: voice-agent
+  namespace: live2d-system
+spec:
+  selector:
+    app: voice-agent
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+# Renderer Agent
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: renderer-agent
+  namespace: live2d-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: renderer-agent
+  template:
+    metadata:
+      labels:
+        app: renderer-agent
+    spec:
+      containers:
+      - name: renderer-agent
+        image: live2d/renderer-agent:2.0
+        env:
+        - name: A2A_REGISTRY_URL
+          value: "http://a2a-registry:50051"
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: renderer-agent
+  namespace: live2d-system
+spec:
+  selector:
+    app: renderer-agent
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+# Web UI
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-ui
+  namespace: live2d-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-ui
+  template:
+    metadata:
+      labels:
+        app: web-ui
+    spec:
+      containers:
+      - name: web-ui
+        image: live2d/web-ui:2.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: API_ENDPOINT
+          value: "http://mcp-gateway:8080"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-ui
+  namespace: live2d-system
+spec:
+  selector:
+    app: web-ui
+  ports:
+  - port: 3000
+    targetPort: 3000
+---
+# Persistent Volume Claims
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: models-pvc
+  namespace: live2d-system
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: output-pvc
+  namespace: live2d-system
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+---
+# HPA for auto-scaling
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: live2d-mcp-hpa
+  namespace: live2d-system
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: live2d-mcp
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: animation-agent-hpa
+  namespace: live2d-system
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: animation-agent
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: voice-agent-hpa
+  namespace: live2d-system
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: voice-agent
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70

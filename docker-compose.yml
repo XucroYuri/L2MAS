@@ -1,0 +1,313 @@
+services:
+  # A2A Registry - Agent discovery and registration
+  a2a-registry:
+    image: a2a/registry:1.0
+    container_name: a2a-registry
+    ports:
+      - "50051:50051"
+    environment:
+      - A2A_REGISTRY_HOST=0.0.0.0
+      - A2A_REGISTRY_PORT=50051
+      - A2A_JWT_SECRET=${A2A_JWT_SECRET}
+      - A2A_REGISTRY_AUTH=jwt
+    volumes:
+      - ./config/a2a_config.json:/app/config/a2a_config.json
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50051/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - live2d-network
+
+  # MCP Gateway - Model Context Protocol gateway
+  mcp-gateway:
+    image: mcp/gateway:2.1
+    container_name: mcp-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - MCP_GATEWAY_HOST=0.0.0.0
+      - MCP_GATEWAY_PORT=8080
+      - MCP_VERSION=${MCP_VERSION:-2025-11-25}
+      - MCP_TRANSPORT=streamable-http
+    volumes:
+      - ./config/mcp_config.json:/app/config/mcp_config.json
+    depends_on:
+      a2a-registry:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - live2d-network
+
+  # Live2D MCP Servers - 3 replicas for load balancing
+  live2d-mcp-1:
+    image: live2d/mcp-server:5.3
+    container_name: live2d-mcp-1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUBISM_SDK_VERSION=5.3.03
+    volumes:
+      - ${MODELS_VOLUME:-./models}:/opt/live2d/models
+      - ${OUTPUT_VOLUME:-./output}:/opt/live2d/output
+    depends_on:
+      mcp-gateway:
+        condition: service_healthy
+    networks:
+      - live2d-network
+
+  live2d-mcp-2:
+    image: live2d/mcp-server:5.3
+    container_name: live2d-mcp-2
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUBISM_SDK_VERSION=5.3.03
+    volumes:
+      - ${MODELS_VOLUME:-./models}:/opt/live2d/models
+      - ${OUTPUT_VOLUME:-./output}:/opt/live2d/output
+    depends_on:
+      mcp-gateway:
+        condition: service_healthy
+    networks:
+      - live2d-network
+
+  live2d-mcp-3:
+    image: live2d/mcp-server:5.3
+    container_name: live2d-mcp-3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUBISM_SDK_VERSION=5.3.03
+    volumes:
+      - ${MODELS_VOLUME:-./models}:/opt/live2d/models
+      - ${OUTPUT_VOLUME:-./output}:/opt/live2d/output
+    depends_on:
+      mcp-gateway:
+        condition: service_healthy
+    networks:
+      - live2d-network
+
+  # Textoon MCP Server
+  textoon-mcp:
+    image: textoon/mcp-server:1.0
+    container_name: textoon-mcp
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - TEXTOON_API_KEY=${TEXTOON_API_KEY}
+    volumes:
+      - ${MODELS_VOLUME:-./models}:/opt/live2d/models
+    depends_on:
+      mcp-gateway:
+        condition: service_healthy
+    networks:
+      - live2d-network
+
+  # TTS MCP Server
+  tts-mcp:
+    image: tts/mcp-server:1.0
+    container_name: tts-mcp
+    environment:
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+    volumes:
+      - ${OUTPUT_VOLUME:-./output}:/opt/live2d/output
+    depends_on:
+      mcp-gateway:
+        condition: service_healthy
+    networks:
+      - live2d-network
+
+  # FFmpeg MCP Server
+  ffmpeg-mcp:
+    image: ffmpeg/mcp-server:1.0
+    container_name: ffmpeg-mcp
+    environment:
+      - FFMPEG_PATH=/usr/bin/ffmpeg
+    volumes:
+      - ${OUTPUT_VOLUME:-./output}:/opt/live2d/output
+    depends_on:
+      mcp-gateway:
+        condition: service_healthy
+    networks:
+      - live2d-network
+
+  # Director Agent
+  director-agent:
+    build:
+      context: .
+      dockerfile: ./agents/director/Dockerfile
+    container_name: director-agent
+    environment:
+      - QWEN_API_KEY=${QWEN_API_KEY}
+      - QWEN_API_BASE=https://api.qwen.ai/v1
+      - A2A_REGISTRY_URL=http://a2a-registry:50051
+      - MCP_CONFIG_PATH=/app/config/mcp_config.json
+    volumes:
+      - ./config:/app/config
+    depends_on:
+      a2a-registry:
+        condition: service_healthy
+      mcp-gateway:
+        condition: service_healthy
+    networks:
+      - live2d-network
+
+  # Modeling Agent
+  modeling-agent:
+    build:
+      context: .
+      dockerfile: ./agents/modeling/Dockerfile
+    container_name: modeling-agent
+    environment:
+      - A2A_REGISTRY_URL=http://a2a-registry:50051
+      - MCP_CONFIG_PATH=/app/config/mcp_config.json
+    volumes:
+      - ./config:/app/config
+      - ${MODELS_VOLUME:-./models}:/opt/live2d/models
+    depends_on:
+      a2a-registry:
+        condition: service_healthy
+      textoon-mcp:
+        condition: service_started
+    networks:
+      - live2d-network
+
+  # Animation Agent
+  animation-agent:
+    build:
+      context: .
+      dockerfile: ./agents/animation/Dockerfile
+    container_name: animation-agent
+    environment:
+      - A2A_REGISTRY_URL=http://a2a-registry:50051
+      - MCP_CONFIG_PATH=/app/config/mcp_config.json
+    volumes:
+      - ./config:/app/config
+      - ${OUTPUT_VOLUME:-./output}:/opt/live2d/output
+    depends_on:
+      a2a-registry:
+        condition: service_healthy
+      live2d-mcp-1:
+        condition: service_started
+    networks:
+      - live2d-network
+
+  # Voice Agent
+  voice-agent:
+    build:
+      context: .
+      dockerfile: ./agents/voice/Dockerfile
+    container_name: voice-agent
+    environment:
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - A2A_REGISTRY_URL=http://a2a-registry:50051
+      - MCP_CONFIG_PATH=/app/config/mcp_config.json
+    volumes:
+      - ./config:/app/config
+      - ${OUTPUT_VOLUME:-./output}:/opt/live2d/output
+    depends_on:
+      a2a-registry:
+        condition: service_healthy
+      tts-mcp:
+        condition: service_started
+    networks:
+      - live2d-network
+
+  # Renderer Agent
+  renderer-agent:
+    build:
+      context: .
+      dockerfile: ./agents/renderer/Dockerfile
+    container_name: renderer-agent
+    environment:
+      - A2A_REGISTRY_URL=http://a2a-registry:50051
+      - MCP_CONFIG_PATH=/app/config/mcp_config.json
+    volumes:
+      - ./config:/app/config
+      - ${OUTPUT_VOLUME:-./output}:/opt/live2d/output
+    depends_on:
+      a2a-registry:
+        condition: service_healthy
+      ffmpeg-mcp:
+        condition: service_started
+    networks:
+      - live2d-network
+
+  # Web UI
+  web-ui:
+    image: live2d/web-ui:2.0
+    container_name: web-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - API_ENDPOINT=http://mcp-gateway:8080
+    depends_on:
+      mcp-gateway:
+        condition: service_healthy
+    networks:
+      - live2d-network
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - live2d-network
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - live2d-network
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  live2d-network:
+    driver: bridge
