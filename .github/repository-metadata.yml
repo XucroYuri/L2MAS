@@ -32,11 +32,6 @@ social_preview:
 canonical_language: en
 localized_readmes:
   - README.zh-CN.md
-  - README.zh-TW.md
   - README.ja.md
   - README.ko.md
   - README.es.md
-  - README.fr.md
-  - README.de.md
-  - README.pt-BR.md
-  - README.ru.md

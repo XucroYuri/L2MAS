@@ -1,21 +1,24 @@
 # Localization Policy
 
-English is the canonical source for L2MAS documentation. Localized README files are welcome, but they should remain short, accurate, and easy to keep in sync.
+English is the canonical source for L2MAS documentation. Localized README files are intentionally limited to the top language set for Live2D technical development and community distribution.
 
 ## Supported README Locales
 
 | Locale | File | Status |
 | --- | --- | --- |
 | `en` | [../../README.md](../../README.md) | canonical |
-| `zh-CN` | [../../README.zh-CN.md](../../README.zh-CN.md) | maintained |
-| `zh-TW` | [../../README.zh-TW.md](../../README.zh-TW.md) | maintained summary |
 | `ja` | [../../README.ja.md](../../README.ja.md) | maintained summary |
+| `zh-CN` | [../../README.zh-CN.md](../../README.zh-CN.md) | maintained summary |
 | `ko` | [../../README.ko.md](../../README.ko.md) | maintained summary |
 | `es` | [../../README.es.md](../../README.es.md) | maintained summary |
-| `fr` | [../../README.fr.md](../../README.fr.md) | maintained summary |
-| `de` | [../../README.de.md](../../README.de.md) | maintained summary |
-| `pt-BR` | [../../README.pt-BR.md](../../README.pt-BR.md) | maintained summary |
-| `ru` | [../../README.ru.md](../../README.ru.md) | maintained summary |
+
+## Selection Rationale
+
+- English: default technical development and GitHub discovery language.
+- Japanese: Live2D's origin market and core creator/developer documentation language.
+- Simplified Chinese: large Live2D, VTuber, illustration, and local AI creator/developer market.
+- Korean: officially supported Cubism language and strong VTuber/game creator community.
+- Spanish: growing Spanish-speaking creator community with official Live2D website support.
 
 ## Rules
 
@@ -32,12 +35,7 @@ Use root-level README names that are common on GitHub:
 ```text
 README.md
 README.zh-CN.md
-README.zh-TW.md
 README.ja.md
 README.ko.md
 README.es.md
-README.fr.md
-README.de.md
-README.pt-BR.md
-README.ru.md
 ```

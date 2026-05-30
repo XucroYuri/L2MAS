@@ -1,6 +1,6 @@
 # L2MAS: Live2D Multi-Agent Animation System
 
-[English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | 한국어 | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt-BR.md) | [Русский](README.ru.md)
+[English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | 한국어 | [Español](README.es.md)
 
 L2MAS는 2026년 에이전트 프로토콜 생태계를 목표로 하는 Live2D 멀티 에이전트 애니메이션 생성 프로토타입입니다. 먼저 로컬 MVP를 완성하고, 이후 배포 가능한 v2.0 분산 아키텍처로 발전시키는 것을 목표로 합니다.
 

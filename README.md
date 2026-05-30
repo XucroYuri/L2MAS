@@ -14,20 +14,15 @@ Qwen3.7-Max, Gemini Omni, Eleven v3, Textoon, and Live2D Cubism 5.3 are treated 
 
 ## Languages
 
-English is the canonical documentation entry. Localized READMEs summarize the project and link back to the canonical docs.
+English is the canonical documentation entry. Localized READMEs are limited to the top language set for Live2D technical development and community distribution: English, Japanese, Simplified Chinese, Korean, and Spanish.
 
 | Language | README |
 | --- | --- |
 | English | [README.md](README.md) |
-| 简体中文 | [README.zh-CN.md](README.zh-CN.md) |
-| 繁體中文 | [README.zh-TW.md](README.zh-TW.md) |
 | 日本語 | [README.ja.md](README.ja.md) |
+| 简体中文 | [README.zh-CN.md](README.zh-CN.md) |
 | 한국어 | [README.ko.md](README.ko.md) |
 | Español | [README.es.md](README.es.md) |
-| Français | [README.fr.md](README.fr.md) |
-| Deutsch | [README.de.md](README.de.md) |
-| Português do Brasil | [README.pt-BR.md](README.pt-BR.md) |
-| Русский | [README.ru.md](README.ru.md) |
 
 Translation policy: [docs/i18n/README.md](docs/i18n/README.md).
 

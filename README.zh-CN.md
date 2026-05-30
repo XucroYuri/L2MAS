@@ -1,6 +1,6 @@
 # L2MAS：Live2D 多 Agent 动画生成系统
 
-[English](README.md) | 简体中文 | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt-BR.md) | [Русский](README.ru.md)
+[English](README.md) | 简体中文 | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md)
 
 L2MAS 是面向 2026 协议生态的 Live2D 多 Agent 动画生成原型，目标是先跑通本地 MVP，再逐步演进到可生产部署的 v2.0 架构。
 
