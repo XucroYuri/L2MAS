@@ -10,10 +10,13 @@ GitHub's own documentation highlights README quality, community profile files, t
 | --- | --- |
 | Repository name | `L2MAS` |
 | Full name | `Live2D Multi-Agent Animation System` |
-| Short description | `Protocol-first Live2D multi-agent animation prototype with MCP, A2A, provider routing, and cloud/local model support.` |
+| Short description | `Live2D multi-agent animation prototype with MCP, A2A, provider routing, local AI, ComfyUI/Ollama/vLLM, and FFmpeg.` |
+| Homepage | `https://github.com/XucroYuri/L2MAS/releases/latest` |
 | Visibility | Public, after final secret scan |
 | License | Apache-2.0 |
 | Default branch | `main` |
+| Discussions | Enabled |
+| Wiki | Disabled |
 
 ## Suggested GitHub Topics
 
@@ -21,25 +24,25 @@ GitHub topics should describe purpose, subject area, community, and language. Us
 
 ```text
 live2d
+vtuber
+animation-generation
+text-to-animation
+generative-ai
+ai-agents
 multi-agent
 mcp
+model-context-protocol
 a2a
-ai-agents
-animation
-generative-ai
+agent-to-agent
 provider-registry
 local-ai
+openai-compatible
 ollama
 vllm
 comfyui
 diffusers
 ffmpeg
-text-to-animation
-vtuber
-tts
-lip-sync
 python
-docker
 ```
 
 ## Social Preview Copy
@@ -53,6 +56,8 @@ MCP + A2A + provider routing for cloud and local AI animation pipelines
 ```
 
 Recommended image size: 1280 x 640 px. Keep the design high contrast, legible at small sizes, and free of third-party trademarks unless usage rights are clear.
+
+The canonical source asset is [../assets/social-preview.svg](../assets/social-preview.svg). Export it to PNG before uploading it in GitHub repository settings.
 
 ## Community Profile Files
 
@@ -124,7 +129,7 @@ After choosing the GitHub owner and confirming authentication:
 ```bash
 gh repo create L2MAS \
   --public \
-  --description "Protocol-first Live2D multi-agent animation prototype with MCP, A2A, provider routing, and cloud/local model support." \
+  --description "Live2D multi-agent animation prototype with MCP, A2A, provider routing, local AI, ComfyUI/Ollama/vLLM, and FFmpeg." \
   --source . \
   --remote origin \
   --push
@@ -133,8 +138,24 @@ gh repo create L2MAS \
 After creation, set topics from the GitHub UI or with GitHub CLI if available:
 
 ```bash
-gh repo edit --add-topic live2d --add-topic multi-agent --add-topic mcp --add-topic a2a --add-topic ai-agents --add-topic animation --add-topic generative-ai --add-topic provider-registry --add-topic local-ai --add-topic ollama --add-topic vllm --add-topic comfyui --add-topic diffusers --add-topic ffmpeg --add-topic text-to-animation --add-topic vtuber --add-topic tts --add-topic lip-sync --add-topic python --add-topic docker
+gh repo edit XucroYuri/L2MAS \
+  --description "Live2D multi-agent animation prototype with MCP, A2A, provider routing, local AI, ComfyUI/Ollama/vLLM, and FFmpeg." \
+  --homepage "https://github.com/XucroYuri/L2MAS/releases/latest" \
+  --enable-discussions=true \
+  --enable-wiki=false \
+  --remove-topic animation \
+  --remove-topic docker \
+  --remove-topic lip-sync \
+  --remove-topic tts \
+  --add-topic animation-generation \
+  --add-topic model-context-protocol \
+  --add-topic agent-to-agent \
+  --add-topic openai-compatible
 ```
+
+## Discovery Maintenance
+
+Detailed discovery metadata, labels, starter issue guidance, and social preview notes live in [discovery-profile.md](discovery-profile.md).
 
 ## References
 

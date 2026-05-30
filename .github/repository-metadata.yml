@@ -1,37 +1,78 @@
 name: L2MAS
 full_name: Live2D Multi-Agent Animation System
-description: Protocol-first Live2D multi-agent animation prototype with MCP, A2A, provider routing, and cloud/local model support.
+description: Live2D multi-agent animation prototype with MCP, A2A, provider routing, local AI, ComfyUI/Ollama/vLLM, and FFmpeg.
 license: Apache-2.0
 default_branch: main
-homepage: ""
+homepage: https://github.com/XucroYuri/L2MAS/releases/latest
+features:
+  issues: true
+  discussions: true
+  projects: true
+  wiki: false
 topics:
   - live2d
+  - vtuber
+  - animation-generation
+  - text-to-animation
+  - generative-ai
+  - ai-agents
   - multi-agent
   - mcp
+  - model-context-protocol
   - a2a
-  - ai-agents
-  - animation
-  - generative-ai
+  - agent-to-agent
   - provider-registry
   - local-ai
+  - openai-compatible
   - ollama
   - vllm
   - comfyui
   - diffusers
   - ffmpeg
-  - text-to-animation
-  - vtuber
-  - tts
-  - lip-sync
   - python
-  - docker
 social_preview:
   title: L2MAS
   subtitle: Live2D Multi-Agent Animation System
   tagline: MCP + A2A + provider routing for cloud and local AI animation pipelines
+  asset: docs/assets/social-preview.svg
 canonical_language: en
 localized_readmes:
   - README.zh-CN.md
   - README.ko.md
   - README.es.md
   - README.ja.md
+labels:
+  - name: triage
+    color: ededed
+    description: Needs initial maintainer review
+  - name: area:provider-registry
+    color: 5319e7
+    description: Provider registry, routing, and capability contracts
+  - name: area:local-ai
+    color: 0e8a16
+    description: Local or self-hosted model/runtime support
+  - name: area:live2d
+    color: 1d76db
+    description: Live2D, Cubism, Textoon, and VTube runtime integration
+  - name: area:docs
+    color: 0075ca
+    description: Documentation, README, examples, and website material
+  - name: protocol:mcp
+    color: fbca04
+    description: Model Context Protocol integration
+  - name: protocol:a2a
+    color: d93f0b
+    description: Agent-to-agent collaboration protocol integration
+  - name: mvp
+    color: c5def5
+    description: MVP prototype scope
+  - name: v2-roadmap
+    color: bfd4f2
+    description: Future production deployment direction
+starter_issues:
+  - title: "Provider adapter: OpenAI-compatible and Ollama local LLM routing"
+    labels: ["enhancement", "help wanted", "good first issue", "area:local-ai", "area:provider-registry"]
+  - title: "Provider adapter: ComfyUI character and storyboard visual workflow"
+    labels: ["enhancement", "help wanted", "area:local-ai", "area:provider-registry"]
+  - title: "Live2D runtime spike: Cubism render adapter contract"
+    labels: ["enhancement", "help wanted", "area:live2d", "v2-roadmap"]

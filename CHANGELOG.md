@@ -6,6 +6,11 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+### Added
+
+- GitHub discovery profile with search-focused metadata, topics, labels, starter issues, and social preview guidance.
+- README at-a-glance section for faster project recognition by GitHub visitors and searchers.
+
 ## [0.1.0] - 2026-05-30
 
 ### Added

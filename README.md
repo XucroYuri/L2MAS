@@ -13,6 +13,16 @@ L2MAS explores how creative agents can plan, generate, voice, animate, review, a
 
 Qwen3.7-Max, Gemini Omni, Eleven v3, Textoon, and Live2D Cubism 5.3 are treated as 2026 capability baselines, not hard-coded dependencies.
 
+## At a Glance
+
+| Signal | What to know |
+| --- | --- |
+| Purpose | Prototype a protocol-first, multi-agent Live2D animation pipeline. |
+| Search keywords | Live2D, multi-agent AI, AI agents, MCP, Model Context Protocol, A2A, Agent2Agent, local AI, ComfyUI, Ollama, vLLM, FFmpeg, VTuber. |
+| Runs today | Deterministic mock MVP plus a local FFmpeg `video.compose` smoke path. |
+| Extension model | Provider registry and capability routing; agents call capabilities, not fixed model names. |
+| Best for | AI agent builders, Live2D/VTube tooling researchers, local AI workflow developers, and animation automation experiments. |
+
 ## Languages
 
 English is the canonical documentation entry. Localized READMEs are limited to the top language set for Live2D technical development and community distribution: English, Simplified Chinese, Korean, Spanish, and Japanese.
@@ -191,6 +201,7 @@ The MVP path must remain runnable with mock or local providers when cloud API ke
 | [config/provider_registry.example.json](config/provider_registry.example.json) | provider registry reference example |
 | [docs/i18n/README.md](docs/i18n/README.md) | localization policy |
 | [docs/github/repository-launch-checklist.md](docs/github/repository-launch-checklist.md) | GitHub publishing checklist and metadata |
+| [docs/github/discovery-profile.md](docs/github/discovery-profile.md) | GitHub discovery profile, topics, labels, and community funnel |
 | [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md) | v0.1.0 release notes |
 
 ## Open Source
@@ -215,13 +226,13 @@ This project is not affiliated with Live2D Inc. Live2D, Cubism, and related name
 
 Suggested repository description:
 
-> Protocol-first Live2D multi-agent animation prototype with MCP, A2A, provider routing, and cloud/local model support.
+> Live2D multi-agent animation prototype with MCP, A2A, provider routing, local AI, ComfyUI/Ollama/vLLM, and FFmpeg.
 
 Suggested topics:
 
-`live2d`, `multi-agent`, `mcp`, `a2a`, `ai-agents`, `animation`, `generative-ai`, `provider-registry`, `local-ai`, `ollama`, `vllm`, `comfyui`, `diffusers`, `ffmpeg`, `text-to-animation`, `vtuber`, `tts`, `lip-sync`, `python`, `docker`
+`live2d`, `vtuber`, `animation-generation`, `text-to-animation`, `generative-ai`, `ai-agents`, `multi-agent`, `mcp`, `model-context-protocol`, `a2a`, `agent-to-agent`, `provider-registry`, `local-ai`, `openai-compatible`, `ollama`, `vllm`, `comfyui`, `diffusers`, `ffmpeg`, `python`
 
-More launch details: [docs/github/repository-launch-checklist.md](docs/github/repository-launch-checklist.md).
+More launch details: [docs/github/discovery-profile.md](docs/github/discovery-profile.md).
 
 ## Keywords
 
