@@ -1,16 +1,17 @@
 # Contributing
 
-感谢你愿意参与 L2MAS。这个仓库当前定位为“面向 2026 协议生态的 Live2D 多 Agent 动画生成原型”，贡献重点是把 MVP 跑通，并保持后续 v2.0 分布式架构可演进。
+Thank you for helping improve L2MAS. The project is an early prototype for protocol-first Live2D multi-agent animation, with an MVP path that should eventually evolve into a deployable v2.0 architecture.
 
-## 开始之前
+## Before You Start
 
-- 阅读 [README.md](README.md)、[docs/architecture/two-stage-roadmap.md](docs/architecture/two-stage-roadmap.md) 和 [deployment_guide.md](deployment_guide.md)。
-- 不要提交 API key、私有 endpoint、模型权重、商业素材、未授权 Live2D 资产或大体积生成文件。
-- 新增模型或工具集成时，请通过 provider registry 和 capability routing 接入，不要在 Agent 逻辑中写死供应商或模型名。
+- Read [README.md](README.md), [docs/architecture/two-stage-roadmap.md](docs/architecture/two-stage-roadmap.md), and [deployment_guide.md](deployment_guide.md).
+- Do not commit API keys, private endpoints, model weights, commercial media, unauthorized Live2D assets, or large generated files.
+- Add new models and tools through provider registry and capability routing. Do not hard-code vendor or model names inside agent logic unless the file is explicitly a provider adapter.
+- Keep English as the canonical documentation language. Localized READMEs should summarize and link back to the English source.
 
-## 本地检查
+## Local Validation
 
-提交 PR 前建议至少运行：
+Run these checks before opening a pull request:
 
 ```bash
 python3 -m json.tool config/a2a_config.json > /dev/null
@@ -19,25 +20,36 @@ python3 -m json.tool config/provider_registry.example.json > /dev/null
 docker compose config > /dev/null
 ```
 
-如果修改了 provider registry，请确认每个 capability 至少有一个 cloud 示例和一个 local 示例，或者在 PR 中说明为什么暂时做不到。
+If you change provider registry examples, confirm that each capability still has at least one cloud provider example and one local provider example, or explain the temporary exception in the PR.
 
-## 贡献流程
+## Contribution Workflow
 
-1. 从 `main` 创建一个短分支名，例如 `docs/open-source-ready` 或 `feat/provider-router`。
-2. 让变更尽量小而完整。文档、配置、代码和测试应一起更新。
-3. 提交 PR，并说明变更目的、影响范围、验证方式和未完成事项。
-4. 维护者会优先审查可复现性、协议兼容性、许可证风险和是否破坏 MVP 路径。
+1. Create a short branch from `main`, such as `docs/i18n-readmes` or `feat/provider-router`.
+2. Keep the change small and complete. Update docs, configuration, tests, and examples together when behavior changes.
+3. Open a pull request with the purpose, impact, validation results, and known gaps.
+4. Maintainers will review reproducibility, protocol compatibility, licensing risk, and whether the MVP path remains intact.
 
-## Commit 风格
+## Commit Style
 
-推荐使用简短的 Conventional Commits 前缀：
+Conventional Commit prefixes are recommended:
 
-- `docs:` 文档
-- `feat:` 新能力
-- `fix:` 修复
-- `chore:` 仓库维护
-- `test:` 测试或验证脚本
+- `docs:` documentation
+- `feat:` new capability
+- `fix:` bug fix
+- `chore:` repository maintenance
+- `test:` tests or validation scripts
 
-## 许可证
+## Localization
 
-除非特别声明，你提交到本仓库的贡献会按 [Apache-2.0](LICENSE) 授权。
+The canonical source is [README.md](README.md). Localized README files should:
+
+- keep technical claims aligned with the English README
+- avoid adding locale-only roadmap promises
+- link to the English canonical docs for detailed setup
+- be updated when the project status, capability list, or provider matrix changes
+
+See [docs/i18n/README.md](docs/i18n/README.md).
+
+## License
+
+Unless stated otherwise, contributions submitted to this repository are licensed under [Apache-2.0](LICENSE).

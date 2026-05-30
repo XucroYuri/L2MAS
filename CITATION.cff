@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: If you use L2MAS in research, prototypes, or technical writing, please cite it using this metadata.
+title: "L2MAS: Live2D Multi-Agent Animation System"
+abstract: "A protocol-first Live2D multi-agent animation prototype using MCP, A2A, provider registry, and cloud/local model routing."
+type: software
+version: 0.1.0
+authors:
+  - name: L2MAS contributors
+license: Apache-2.0
+keywords:
+  - Live2D
+  - multi-agent
+  - MCP
+  - A2A
+  - AI agents
+  - animation
+  - provider registry
+  - local AI
+  - cloud AI
+date-released: "2026-05-30"

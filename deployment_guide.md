@@ -1,68 +1,63 @@
-# 部署与演进指南
+# Deployment and Evolution Guide
 
-## Live2D Multi-Agent Animation System
+## L2MAS: Live2D Multi-Agent Animation System
 
-面向 2026 协议生态的 Live2D 多 Agent 动画生成原型，目标是逐步达到生产可部署。
+L2MAS is a protocol-first Live2D multi-agent animation prototype for the 2026 agent ecosystem. The goal is to move in two stages: first a local MVP, then a v2.0 architecture that can become production-deployable.
 
-本指南分成两个阶段：
+This guide is intentionally written as a deployment roadmap, not as a claim that the current repository is production-ready.
 
-1. **MVP 原型部署**：本地或单机 Docker 环境，优先跑通端到端链路。
-2. **v2.0 生产演进**：A2A 注册发现、MCP 工具集群、Kubernetes、观测、安全、多租户和多 provider 路由。
+## 1. Technical Baseline
 
-## 1. 技术基线
-
-| 类别 | 基线 |
+| Area | Baseline |
 | --- | --- |
-| Agent 通信 | A2A 1.0 |
-| 工具协议 | MCP 2025-11-25 + Streamable HTTP + Tasks |
-| 模型接入 | Provider registry + capability routing |
-| 本地 LLM | OpenAI-compatible endpoint、Ollama、vLLM、LM Studio、llama.cpp server |
-| 本地图像/视频 | ComfyUI local API、Diffusers worker、Textoon local pipeline |
-| 本地语音 | 本地 TTS、Whisper/whisper.cpp、RVC/SeedVC 类 voice conversion |
-| 渲染 | FFmpeg local，后续可包装为 FFmpeg MCP server |
+| Agent communication | A2A 1.0 target |
+| Tool protocol | MCP 2025-11-25 + Streamable HTTP + Tasks |
+| Model access | Provider registry + capability routing |
+| Local LLM | OpenAI-compatible endpoint, Ollama, vLLM, LM Studio, llama.cpp server |
+| Local image/video | ComfyUI local API, Diffusers worker, Textoon local pipeline |
+| Local speech | local TTS, Whisper/whisper.cpp, RVC-like and SeedVC-like voice conversion |
+| Rendering | FFmpeg local for MVP; FFmpeg MCP server for v2.0 |
 
-Qwen3.7-Max、Gemini Omni、Eleven v3、Textoon、Live2D Cubism 5.3 是能力基准，不是硬编码依赖。
+Qwen3.7-Max, Gemini Omni, Eleven v3, Textoon, and Live2D Cubism 5.3 are capability baselines, not hard-coded dependencies.
 
-## 2. 项目现状
-
-当前源码包含：
+## 2. Current Repository Shape
 
 ```text
 agents/
-  director/    # 分镜与编排骨架
-  modeling/    # Live2D/Textoon 建模骨架
-  animation/   # 动作与表情参数生成骨架
-  voice/       # TTS 配音骨架
-  renderer/    # FFmpeg 合成骨架
+  director/    # storyboard and orchestration skeleton
+  modeling/    # Live2D/Textoon modeling skeleton
+  animation/   # motion and expression parameter skeleton
+  voice/       # TTS voice skeleton
+  renderer/    # FFmpeg composition skeleton
 config/
   a2a_config.json
   mcp_config.json
   provider_registry.example.json
 ```
 
-v2.0 目标中的 Writer、Artist、LipSync、QA Agent 尚未落地，应在后续迭代补齐。
+Writer, Artist, LipSync, and QA agents are v2.0 targets.
 
-## 3. MVP 原型部署
+## 3. MVP Deployment Path
 
-### 3.1 环境要求
+### 3.1 Requirements
 
-MVP 可以使用 mock provider 或本地 provider，不要求一开始具备全部云端 API key。
+The MVP should be able to run with mock or local providers. Cloud API keys should improve quality, not be required for a first demonstration.
 
-最低建议：
+Minimum recommended environment:
 
 - Python 3.11+
 - Docker 25+
 - Docker Compose 2.20+
 - FFmpeg
-- 可选 GPU：用于 Textoon、ComfyUI、Diffusers、vLLM 等本地推理
+- optional GPU for Textoon, ComfyUI, Diffusers, vLLM, or similar local inference
 
-### 3.2 配置环境变量
+### 3.2 Configure Environment Variables
 
 ```bash
 cp .env.example .env
 ```
 
-MVP 推荐先保留云端 key 为空，使用本地或 mock provider 跑通流程。需要真实云端能力时再配置：
+Keep cloud keys empty for a mock/local first run. Add real keys only when testing cloud providers:
 
 ```bash
 QWEN_API_KEY=your_qwen_api_key_here
@@ -70,16 +65,16 @@ GEMINI_API_KEY=your_gemini_api_key_here
 ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 ```
 
-MCP 版本字段应使用日期版本：
+MCP should use the date-versioned spec field:
 
 ```bash
 MCP_VERSION=2025-11-25
 MCP_TRANSPORT=streamable-http
 ```
 
-### 3.3 配置 provider registry
+### 3.3 Configure Provider Registry
 
-Provider registry 是模型和工具的统一入口。示例：
+Provider registry is the unified entry point for models and tools:
 
 ```json
 {
@@ -96,145 +91,73 @@ Provider registry 是模型和工具的统一入口。示例：
 }
 ```
 
-每个 provider 必须声明：
+Full example: [config/provider_registry.example.json](config/provider_registry.example.json).
 
-- `provider_id`
-- `locality`: `cloud | local | hybrid`
-- `protocol`: `openai-compatible | ollama | mcp | comfyui | a2a | custom-rest`
-- `capabilities`
-- `endpoint`
-- `models`
-- `hardware_profile`
-- `priority`
-- `fallbacks`
-- `privacy_mode`
+### 3.4 Local Provider Compatibility
 
-完整示例见 [config/provider_registry.example.json](config/provider_registry.example.json)。
+| Capability family | Local options |
+| --- | --- |
+| LLM / Agent | Ollama, vLLM, LM Studio, llama.cpp server, OpenAI-compatible endpoints |
+| Image / video / character | ComfyUI local API, Diffusers worker, Textoon local pipeline |
+| Speech | local TTS, Whisper, whisper.cpp |
+| Voice conversion | RVC-like and SeedVC-like providers |
+| Render | FFmpeg local |
 
-### 3.4 本地模型接入
+Agents depend on capability names such as `script.plan`, `voice.generate`, and `video.compose`; they should not depend on a fixed vendor model.
 
-#### LLM / Agent
-
-可选入口：
-
-- Ollama: `http://localhost:11434`
-- vLLM OpenAI-compatible server
-- LM Studio local server
-- llama.cpp server
-- 任意 OpenAI-compatible endpoint
-
-Director/Writer 类 Agent 只依赖 `script.plan` 和 `quality.review` 等 capability，不关心底层模型来自云端还是本地。
-
-#### 图像、视频与角色生成
-
-可选入口：
-
-- ComfyUI local API
-- Diffusers worker
-- Textoon local pipeline
-- 云端图像/视频生成 API
-
-Artist/Modeling 类能力通过 `character.generate`、`model.live2d.generate`、`video.edit` 暴露。
-
-#### 语音与口型
-
-可选入口：
-
-- Eleven v3 或其他云端 TTS
-- 本地 TTS
-- Whisper/whisper.cpp
-- RVC/SeedVC 类 voice conversion
-
-Voice/LipSync 类能力通过 `voice.generate`、`speech.transcribe`、`voice.convert`、`lip_sync.align` 暴露。
-
-### 3.5 Docker 配置预检
+### 3.5 Preflight
 
 ```bash
+python3 -m json.tool config/a2a_config.json > /dev/null
+python3 -m json.tool config/mcp_config.json > /dev/null
+python3 -m json.tool config/provider_registry.example.json > /dev/null
 docker compose config
 ```
 
-此命令只验证 Compose 配置能否展开。当前仓库仍需要补齐真实 MCP server 镜像、mock provider、SDK 包装和监控配置后，才能宣称完整启动成功。
+This validates configuration shape. The repository still needs real/mock MCP server implementations, SDK wrappers, and runtime tests before claiming full startup success.
 
-## 4. MVP 验证目标
+## 4. MVP Completion Criteria
 
-MVP 的完成标准不是性能数字，而是链路可验证：
+The MVP is complete when the following flow is reproducible without cloud keys:
 
-1. 输入短脚本和角色描述。
-2. Director 输出结构化 storyboard。
-3. Modeling 返回可用的 sample 或生成模型路径。
-4. Voice 返回音频路径或 mock 音频 artifact。
-5. Animation 返回镜头片段路径或 mock video artifact。
-6. Renderer 使用 FFmpeg 或 mock composer 返回 final video artifact。
-7. 全流程在没有云端 key 时也能通过 mock/local provider 运行。
+1. Input a short script and character description.
+2. Director returns structured storyboard data.
+3. Modeling returns a sample or generated model artifact path.
+4. Voice returns an audio artifact path or mock audio artifact.
+5. Animation returns shot clips or mock video artifacts.
+6. Renderer returns a final video artifact through FFmpeg local or a mock composer.
+7. The run emits task status, artifact paths, and recoverable error messages.
 
-## 5. v2.0 生产演进
+## 5. v2.0 Evolution
 
-v2.0 在 MVP 之上增加分布式和生产能力。
+v2.0 adds distributed and production-oriented capabilities on top of the MVP:
 
-### 5.1 Agent 层
-
-目标 Agent：
-
-| Agent | Capability |
+| Layer | Direction |
 | --- | --- |
-| Director | `script.plan`、任务编排、质量门禁 |
-| Writer | 剧本扩写、台词、情绪标签 |
-| Artist | `character.generate`、风格设定、角色一致性 |
-| Modeling | `model.live2d.generate` |
-| Voice | `voice.generate`、`voice.convert` |
-| LipSync | `speech.transcribe`、`lip_sync.align` |
-| Animation | `motion.generate` |
-| Renderer | `video.compose`、`video.edit` |
-| QA | `quality.review` |
+| Agent | A2A Agent Cards, discovery, task routing, and version negotiation |
+| Tooling | MCP 2025-11-25 tool servers with Tasks and Streamable HTTP |
+| State | task IDs, progress events, artifact schemas, retries, and resumability |
+| Deployment | Kubernetes, service mesh, object storage, provider registry service |
+| Observability | Prometheus, Grafana, structured logs, audit logs |
+| Security | per-request auth, privacy modes, tenant isolation, secret management |
 
-### 5.2 协议层
+## 6. Benchmark Strategy
 
-- A2A 1.0 用于 Agent Card、能力发现、任务路由、版本协商和跨 Agent 通信。
-- MCP 2025-11-25 用于工具、资源、任务状态和 Streamable HTTP。
-- 所有长任务必须有 task id、状态、进度、错误信息和 artifact 输出。
+Performance numbers should be written as target metrics or benchmark results with date, hardware, provider, model, and input details.
 
-### 5.3 部署层
+Recommended benchmark dimensions:
 
-生产部署目标：
-
-- Kubernetes 管理 Agent、MCP server 和 worker。
-- Istio 或同类服务网格处理流量治理、mTLS 和重试。
-- 对象存储保存模型、音频、镜头片段和最终视频。
-- Provider registry 由配置中心或数据库管理。
-
-### 5.4 可观测与安全
-
-生产目标：
-
-- Prometheus/Grafana 采集任务数量、耗时、失败率、provider 命中率、成本估算。
-- 结构化日志记录 task id、agent id、provider id、artifact id。
-- 审计日志记录跨 Agent 调用和高风险工具调用。
-- 支持 `local-only` privacy mode，确保敏感素材不离开本地或私有集群。
-
-## 6. Benchmark 策略
-
-文档中的性能数据必须以“目标指标”或“待验证指标”呈现。建议验证：
-
-| 指标 | MVP 验证 | v2.0 验证 |
+| Metric | MVP validation | v2.0 validation |
 | --- | --- | --- |
-| 端到端成功率 | 单机短脚本 10 次运行 | 多 Agent 并发任务 |
-| 生成耗时 | 分镜、配音、渲染分段计时 | provider 路由和集群吞吐 |
-| 成本 | 云端 token 和语音调用估算 | 每分钟视频成本 |
-| 本地可用性 | 无云端 key 可跑通 mock/local 链路 | local-only 隐私模式 |
-| 质量 | 人工审查分镜、口型、动作一致性 | QA Agent + 人工抽检 |
+| End-to-end success | 10 short-script local runs | concurrent distributed tasks |
+| Latency | local mock and FFmpeg baseline | provider-specific routing comparison |
+| Cost | cloud calls disabled by default | provider cost reports |
+| Quality | human review checklist | QA agent plus human review |
+| Privacy | local-only provider path | tenant and audit validation |
 
-## 7. 故障排查方向
+## 7. Related Docs
 
-- 如果云端 key 缺失，确认 provider registry 中存在可用 local 或 mock provider。
-- 如果本地 LLM 无响应，检查 OpenAI-compatible endpoint、Ollama、vLLM、LM Studio 或 llama.cpp server 是否启动。
-- 如果 ComfyUI/Textoon 任务失败，检查 workflow、模型权重、GPU 内存和路径挂载。
-- 如果 A2A 注册失败，检查 Agent Card、协议版本和 registry endpoint。
-- 如果 MCP 工具不可见，检查 MCP server 的工具列表、协议版本和 Streamable HTTP 连接。
-
-## 8. 参考文档
-
-- [两阶段架构路线图](docs/architecture/two-stage-roadmap.md)
-- [Provider Registry 示例](config/provider_registry.example.json)
-- [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-11-25)
-- [Agent2Agent Protocol Specification](https://a2a-protocol.org/latest/specification/)
-
+- [README.md](README.md)
+- [README.zh-CN.md](README.zh-CN.md)
+- [docs/architecture/two-stage-roadmap.md](docs/architecture/two-stage-roadmap.md)
+- [docs/github/repository-launch-checklist.md](docs/github/repository-launch-checklist.md)
