@@ -4,17 +4,18 @@ Modeling Agent - Generates Live2D models from text or images using Textoon
 
 import asyncio
 import logging
+from dataclasses import dataclass
 from typing import Optional
 from uuid import uuid4
 
-from pydantic import BaseModel
 from a2a import agent_task, AgentCapability
 
 from agents.base.agent import BaseAgent
 
 logger = logging.getLogger(__name__)
 
-class ModelingInput(BaseModel):
+@dataclass
+class ModelingInput:
     """Input for modeling agent"""
     text_description: str
     image_path: Optional[str] = None
@@ -23,7 +24,8 @@ class ModelingInput(BaseModel):
     auto_rig: bool = True
     generate_physics: bool = True
 
-class ModelingOutput(BaseModel):
+@dataclass
+class ModelingOutput:
     """Output from modeling agent"""
     model_path: str
     parameters: dict
@@ -32,19 +34,13 @@ class ModelingOutput(BaseModel):
 
 class ModelingAgent(BaseAgent):
     agent_id = "modeling@tools.example.com"
-    name = "Live2D建模专家"
-    description = "从文本或图片自动生成高质量Live2D模型，使用Textoon技术"
+    name = "Live2D Modeling Agent"
+    description = "Generates or selects Live2D model artifacts from text or image input"
     
     capabilities = [
         AgentCapability(
-            name="text_to_live2d",
+            name="model.live2d.generate",
             description="从文本描述生成完整的Live2D角色模型",
-            input_schema=ModelingInput,
-            output_schema=ModelingOutput
-        ),
-        AgentCapability(
-            name="image_to_live2d",
-            description="从单张图片生成完整的Live2D角色模型",
             input_schema=ModelingInput,
             output_schema=ModelingOutput
         )

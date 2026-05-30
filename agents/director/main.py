@@ -4,17 +4,18 @@ Director Agent - The overall orchestrator of the animation production
 
 import asyncio
 import logging
+from dataclasses import dataclass
 from typing import List, Dict, Any
 from uuid import uuid4
 
-from pydantic import BaseModel
 from a2a import agent_task, AgentCapability
 
 from agents.base.agent import BaseAgent
 
 logger = logging.getLogger(__name__)
 
-class Shot(BaseModel):
+@dataclass
+class Shot:
     """Single shot in storyboard"""
     id: str
     duration: float
@@ -23,20 +24,23 @@ class Shot(BaseModel):
     emotion: str
     camera_angle: str = "front"
 
-class Storyboard(BaseModel):
+@dataclass
+class Storyboard:
     """Complete storyboard"""
     shots: List[Shot]
     total_duration: float
     title: str
     style: str
 
-class DirectorInput(BaseModel):
+@dataclass
+class DirectorInput:
     """Input for director agent"""
     script: str
     character_info: Dict[str, Any]
     style: str = "anime"
 
-class DirectorOutput(BaseModel):
+@dataclass
+class DirectorOutput:
     """Output from director agent"""
     storyboard: Storyboard
     task_id: str
@@ -44,12 +48,12 @@ class DirectorOutput(BaseModel):
 
 class DirectorAgent(BaseAgent):
     agent_id = "director@studio.example.com"
-    name = "总导演Agent"
-    description = "全局任务编排，将剧本分解为分镜，协调所有Agent工作"
+    name = "Director Agent"
+    description = "Plans storyboards and orchestrates the animation workflow"
     
     capabilities = [
         AgentCapability(
-            name="create_storyboard",
+            name="script.plan",
             description="从剧本和角色信息创建分镜脚本",
             input_schema=DirectorInput,
             output_schema=DirectorOutput

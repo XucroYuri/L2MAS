@@ -4,17 +4,18 @@ Animation Agent - Generates animation clips for each shot
 
 import asyncio
 import logging
+from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
 from uuid import uuid4
 
-from pydantic import BaseModel
 from a2a import agent_task, AgentCapability
 
 from agents.base.agent import BaseAgent
 
 logger = logging.getLogger(__name__)
 
-class AnimationShotInput(BaseModel):
+@dataclass
+class AnimationShotInput:
     """Input for a single animation shot"""
     model_path: str
     duration: float
@@ -23,7 +24,8 @@ class AnimationShotInput(BaseModel):
     audio_path: Optional[str] = None
     auto_lip_sync: bool = True
 
-class AnimationShotOutput(BaseModel):
+@dataclass
+class AnimationShotOutput:
     """Output for a single animation shot"""
     video_path: str
     parameter_sequence: List[Dict[str, float]]
@@ -31,12 +33,12 @@ class AnimationShotOutput(BaseModel):
 
 class AnimationAgent(BaseAgent):
     agent_id = "animator@tools.example.com"
-    name = "动画导演Agent"
-    description = "根据分镜生成动画片段，自动生成动作序列和表情变化"
+    name = "Animation Agent"
+    description = "Generates shot motion, expression parameters, and animation artifacts"
     
     capabilities = [
         AgentCapability(
-            name="generate_animation",
+            name="motion.generate",
             description="为单个镜头生成动画片段",
             input_schema=AnimationShotInput,
             output_schema=AnimationShotOutput

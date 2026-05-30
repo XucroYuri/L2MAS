@@ -8,6 +8,7 @@ from .pipeline import (
     ShotArtifact,
 )
 from .provider_registry import Provider, ProviderRegistry
+from .providers import ProviderInvocationResult, ProviderRouter
 
 __all__ = [
     "AnimationGenerator",
@@ -15,6 +16,8 @@ __all__ = [
     "Live2DModelGenerator",
     "Live2DModelResult",
     "Provider",
+    "ProviderInvocationResult",
     "ProviderRegistry",
+    "ProviderRouter",
     "ShotArtifact",
 ]

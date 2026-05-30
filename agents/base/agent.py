@@ -5,9 +5,10 @@ Base Agent class for A2A protocol
 import asyncio
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-from a2a import Agent, AgentCapability
+from a2a import Agent
+from live2d_ai import Provider, ProviderRegistry
 from mcp import MCPClient
 
 logger = logging.getLogger(__name__)
@@ -21,10 +22,16 @@ class BaseAgent(Agent):
     def __init__(self):
         super().__init__()
         self.mcp_client: Optional[MCPClient] = None
-        self.agent_id: str = ""
-        self.name: str = ""
-        self.description: str = ""
-        self.capabilities: List[AgentCapability] = []
+        self.agent_id = getattr(self.__class__, "agent_id", "")
+        self.name = getattr(self.__class__, "name", "")
+        self.description = getattr(self.__class__, "description", "")
+        self.capabilities = list(getattr(self.__class__, "capabilities", []))
+        registry_path = os.getenv("PROVIDER_REGISTRY_PATH")
+        self.provider_registry = (
+            ProviderRegistry.from_file(registry_path)
+            if registry_path
+            else ProviderRegistry.default()
+        )
         
     async def initialize(self):
         """Initialize the agent, connect to MCP servers"""
@@ -64,6 +71,19 @@ class BaseAgent(Agent):
                 return tool
         
         raise ValueError(f"Tool {tool_name} not found")
+
+    def select_provider(
+        self,
+        capability: str,
+        privacy_mode: str | None = None,
+        prefer_mock: bool = False,
+    ) -> Provider:
+        """Select a provider for a standard capability."""
+        return self.provider_registry.select(
+            capability,
+            privacy_mode=privacy_mode or os.getenv("DEFAULT_PRIVACY_MODE", "local-only"),
+            prefer_mock=prefer_mock,
+        )
     
     async def wait_for_agent(self, agent_id: str, timeout: int = 30):
         """Wait for another agent to become available"""

@@ -4,17 +4,18 @@ Voice Agent - Generates voice-over using TTS
 
 import asyncio
 import logging
+from dataclasses import dataclass
 from typing import Any, Dict, List
 from uuid import uuid4
 
-from pydantic import BaseModel
 from a2a import agent_task, AgentCapability
 
 from agents.base.agent import BaseAgent
 
 logger = logging.getLogger(__name__)
 
-class VoiceInput(BaseModel):
+@dataclass
+class VoiceInput:
     """Input for voice generation"""
     text: str
     emotion: str = "neutral"
@@ -22,7 +23,8 @@ class VoiceInput(BaseModel):
     rate: float = 1.0
     pitch: float = 0.0
 
-class VoiceOutput(BaseModel):
+@dataclass
+class VoiceOutput:
     """Output from voice generation"""
     audio_path: str
     duration: float
@@ -31,12 +33,12 @@ class VoiceOutput(BaseModel):
 
 class VoiceAgent(BaseAgent):
     agent_id = "voice@tools.example.com"
-    name = "配音Agent"
-    description = "生成情感配音，支持多模态TTS和RVC克隆"
+    name = "Voice Agent"
+    description = "Generates dialogue audio and speech timing artifacts"
     
     capabilities = [
         AgentCapability(
-            name="generate_voice",
+            name="voice.generate",
             description="为台词生成配音，支持情感调整",
             input_schema=VoiceInput,
             output_schema=VoiceOutput

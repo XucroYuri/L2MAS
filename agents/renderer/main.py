@@ -5,31 +5,34 @@ Renderer Agent - Composes all shots into final video
 import asyncio
 import logging
 import os
+from dataclasses import dataclass
 from typing import List, Dict, Any
 from uuid import uuid4
 
-from pydantic import BaseModel
 from a2a import agent_task, AgentCapability
 
 from agents.base.agent import BaseAgent
 
 logger = logging.getLogger(__name__)
 
-class ShotResult(BaseModel):
+@dataclass
+class ShotResult:
     """Result from a single shot processing"""
     shot_id: str
     video_path: str
     audio_path: str
     duration: float
 
-class RenderInput(BaseModel):
+@dataclass
+class RenderInput:
     """Input for rendering"""
     shots: List[ShotResult]
     resolution: str = "1920x1080"
     fps: int = 60
     add_transitions: bool = True
 
-class RenderOutput(BaseModel):
+@dataclass
+class RenderOutput:
     """Output from rendering"""
     final_video_path: str
     total_duration: float
@@ -37,12 +40,12 @@ class RenderOutput(BaseModel):
 
 class RendererAgent(BaseAgent):
     agent_id = "renderer@tools.example.com"
-    name = "渲染合成Agent"
-    description = "将所有动画片段合成最终视频，添加转场和特效"
+    name = "Renderer Agent"
+    description = "Composes shot artifacts into the final video output"
     
     capabilities = [
         AgentCapability(
-            name="compose_video",
+            name="video.compose",
             description="将多个镜头合成最终视频",
             input_schema=RenderInput,
             output_schema=RenderOutput
