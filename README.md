@@ -4,6 +4,7 @@
 [![MCP](https://img.shields.io/badge/MCP-2025--11--25-orange.svg)](https://modelcontextprotocol.io)
 [![A2A](https://img.shields.io/badge/A2A-1.0-purple.svg)](https://a2a-protocol.org)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://docker.com)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 面向 2026 协议生态的 Live2D 多 Agent 动画生成原型，目标是逐步达到生产可部署。
 
@@ -133,6 +134,19 @@ docker compose config
 - [部署指南](deployment_guide.md)
 - [Provider Registry 示例](config/provider_registry.example.json)
 
+## 开源协作
+
+本项目以 Apache-2.0 许可证开源，目标是让协议、provider registry、Agent 分工和本地/云端模型兼容设计可以被社区复用、验证和扩展。
+
+- [贡献指南](CONTRIBUTING.md)
+- [行为准则](CODE_OF_CONDUCT.md)
+- [安全披露](SECURITY.md)
+- [支持方式](SUPPORT.md)
+- [变更记录](CHANGELOG.md)
+- [许可证](LICENSE)
+
+请不要提交 API key、模型权重、商业素材或未获授权的 Live2D 资产。仓库中的模型、服务和 endpoint 多为原型配置或占位示例，实际部署需要按各 provider 和第三方工具的许可证单独确认。
+
 ## 技术基准参考
 
 - [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-11-25)
@@ -140,4 +154,3 @@ docker compose config
 - [Live2D Cubism](https://www.live2d.com/en/cubism/update/)
 - [Textoon](https://github.com/Human3DAIGC/Textoon)
 - [ElevenLabs Models](https://elevenlabs.io/docs/overview/models)
-

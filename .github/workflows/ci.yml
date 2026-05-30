@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  repository-checks:
+    runs-on: ubuntu-latest
+    env:
+      A2A_JWT_SECRET: ci-placeholder
+      QWEN_API_KEY: ci-placeholder
+      GEMINI_API_KEY: ci-placeholder
+      TEXTOON_API_KEY: ci-placeholder
+      ELEVENLABS_API_KEY: ci-placeholder
+      GRAFANA_ADMIN_PASSWORD: ci-placeholder
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate JSON configuration
+        run: |
+          python -m json.tool config/a2a_config.json > /dev/null
+          python -m json.tool config/mcp_config.json > /dev/null
+          python -m json.tool config/provider_registry.example.json > /dev/null
+
+      - name: Check architecture wording
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          banned = [
+              "MCP 2.1",
+              "唯一最佳模型",
+              "立即生产就绪",
+          ]
+          paths = [
+              p for p in Path(".").rglob("*")
+              if p.is_file()
+              and ".git" not in p.parts
+              and ".github/workflows/ci.yml" != p.as_posix()
+          ]
+
+          hits = []
+          for path in paths:
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  continue
+              for term in banned:
+                  if term in text:
+                      hits.append(f"{path}: contains {term!r}")
+
+          if hits:
+              raise SystemExit("\n".join(hits))
+          PY
+
+      - name: Check provider coverage
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          registry = json.loads(Path("config/provider_registry.example.json").read_text())
+          required = {
+              "script.plan",
+              "character.generate",
+              "model.live2d.generate",
+              "voice.generate",
+              "speech.transcribe",
+              "voice.convert",
+              "lip_sync.align",
+              "motion.generate",
+              "video.compose",
+              "video.edit",
+              "quality.review",
+          }
+
+          coverage = {cap: {"cloud": 0, "local": 0} for cap in required}
+          for provider in registry.get("providers", []):
+              locality = provider.get("locality")
+              for cap in provider.get("capabilities", []):
+                  if cap in coverage and locality in ("cloud", "local"):
+                      coverage[cap][locality] += 1
+
+          missing = [
+              f"{cap}: {counts}"
+              for cap, counts in coverage.items()
+              if counts["cloud"] == 0 or counts["local"] == 0
+          ]
+          if missing:
+              raise SystemExit("Missing cloud/local provider coverage:\n" + "\n".join(missing))
+          PY
+
+      - name: Validate Docker Compose
+        run: docker compose config > /dev/null

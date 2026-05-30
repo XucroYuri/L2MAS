@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a scoped capability, provider, agent, or documentation improvement.
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or contributor problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the smallest useful change.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Agent orchestration
+        - Provider registry
+        - Local model support
+        - Cloud provider support
+        - Live2D/Textoon tooling
+        - Rendering/composition
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Tradeoffs and alternatives
+      description: Mention protocol, provider, licensing, performance, or deployment tradeoffs.
