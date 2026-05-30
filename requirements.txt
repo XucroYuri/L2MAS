@@ -5,7 +5,7 @@
 # Live2D Cubism SDK, Textoon, ComfyUI, Diffusers, and media-model workers are
 # optional provider integrations and are not installed by the default MVP path.
 
-pydantic==2.7.0
+pydantic==2.13.4
 pydantic-settings==2.2.0
 python-dotenv==1.0.1
 httpx==0.27.0
