@@ -43,9 +43,9 @@ jobs:
           required = [
               "README.md",
               "README.zh-CN.md",
-              "README.ja.md",
               "README.ko.md",
               "README.es.md",
+              "README.ja.md",
               "docs/i18n/README.md",
           ]
           missing = [path for path in required if not Path(path).is_file()]

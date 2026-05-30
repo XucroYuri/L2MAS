@@ -7,18 +7,18 @@ English is the canonical source for L2MAS documentation. Localized README files 
 | Locale | File | Status |
 | --- | --- | --- |
 | `en` | [../../README.md](../../README.md) | canonical |
-| `ja` | [../../README.ja.md](../../README.ja.md) | maintained summary |
 | `zh-CN` | [../../README.zh-CN.md](../../README.zh-CN.md) | maintained summary |
 | `ko` | [../../README.ko.md](../../README.ko.md) | maintained summary |
 | `es` | [../../README.es.md](../../README.es.md) | maintained summary |
+| `ja` | [../../README.ja.md](../../README.ja.md) | maintained summary |
 
 ## Selection Rationale
 
 - English: default technical development and GitHub discovery language.
-- Japanese: Live2D's origin market and core creator/developer documentation language.
 - Simplified Chinese: large Live2D, VTuber, illustration, and local AI creator/developer market.
 - Korean: officially supported Cubism language and strong VTuber/game creator community.
 - Spanish: growing Spanish-speaking creator community with official Live2D website support.
+- Japanese: Live2D's origin market and core creator/developer documentation language.
 
 ## Rules
 
@@ -35,7 +35,7 @@ Use root-level README names that are common on GitHub:
 ```text
 README.md
 README.zh-CN.md
-README.ja.md
 README.ko.md
 README.es.md
+README.ja.md
 ```
