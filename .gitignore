@@ -52,3 +52,8 @@ Thumbs.db
 *.swp
 *.swo
 
+# Tool state (not project artifacts)
+.omc/sessions/
+.omc/state/
+.omc/project-memory.json
+
