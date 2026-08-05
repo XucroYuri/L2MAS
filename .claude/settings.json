@@ -1,0 +1,53 @@
+{
+  "alwaysThinkingEnabled": false,
+  "autoMemoryEnabled": true,
+  "enabledPlugins": {
+    "oh-my-claudecode@omc": true,
+    "superpowers@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Bash(bun:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(git:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(sort:*)",
+      "Bash(date:*)",
+      "Bash(echo:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(curl:*)",
+      "Bash(sleep:*)",
+      "Agent",
+      "WebSearch",
+      "WebFetch",
+      "LSP",
+      "Skill",
+      "TodoWrite",
+      "AskUserQuestion"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(rm -r:*)",
+      "Bash(> /dev:*)",
+      "Bash(> /etc:*)",
+      "Bash(sudo:*)",
+      "Bash(chown:*)"
+    ],
+    "defaultMode": "acceptEdits"
+  }
+}
